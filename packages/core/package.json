@@ -1,0 +1,16 @@
+{
+  "name": "vue-mentions",
+  "private": false,
+  "version": "0.0.1",
+  "type": "module",
+  "main": "dist/vue-mentions.js",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "typescript": "^4.9.3",
+    "vite": "^4.2.0"
+  }
+}
