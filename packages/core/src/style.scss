@@ -1,0 +1,61 @@
+.vue-mentions__mention {
+  font-style: normal;
+}
+
+.vue-mentions__at {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+}
+.vue-mentions__dropdown {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: max-content;
+
+  .vue-mentions__dropdown-list {
+    list-style: none;
+    max-height: 100%;
+    overflow-y: auto;
+    margin: 0;
+    padding: 4px;
+    border-radius: 4px;
+    border: 1px solid #f1f1f1;
+    background-color: #fff;
+
+    .vue-mentions__dropdown-list-option {
+      padding: 0 4px;
+      line-height: 28px;
+      border-radius: 4px;
+      background-color: transparent;
+      cursor: pointer;
+
+      &.active {
+        background-color: #efefef;
+      }
+    }
+  }
+
+  .vue-mentions__dropdown-arrow {
+    position: absolute;
+    left: 0;
+    transform: translateX(-50%);
+
+    &.arrow-top {
+      bottom: -10px;
+      border-top: 10px solid #333;
+      border-left: 6px solid transparent;
+      border-right: 6px solid transparent;
+    }
+
+    &.arrow-bottom {
+      top: -10px;
+      border-bottom: 10px solid #333;
+      border-left: 6px solid transparent;
+      border-right: 6px solid transparent;
+    }
+  }
+}
