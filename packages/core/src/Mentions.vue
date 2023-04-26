@@ -1,7 +1,7 @@
 <script lang="jsx">
 import { getMatchMention, computePosition, createAtElement, createMentionElement, insertNodeAfterRange, setRangeAfterNode } from './utils.ts'
 
-import { DOM_CLASSES } from './config.ts'
+import { DOM_CLASSES, integerValidator } from './config.ts'
 
 export default {
   name: 'VueMentions',
@@ -38,7 +38,8 @@ export default {
 
     maxLength: {
       type: Number,
-      default: 0
+      default: NaN,
+      validator: integerValidator
     }
   },
 
@@ -51,7 +52,7 @@ export default {
       currentInputValue: undefined,
       content: [],
       // 当前匹配到的所有 Mentions
-      currentMetions: [],
+      currentMentions: [],
 
       filterValue: undefined,
 
@@ -111,7 +112,7 @@ export default {
       this.$emit('active-option-change', this.localOptions[idx])
     },
 
-    currentMetions (mentions) {
+    currentMentions (mentions) {
       this.$emit('mentions-change', mentions)
     }
   },
@@ -163,7 +164,7 @@ export default {
           if (match) {
             content.push(match)
             val = val.slice(match.label.length + 1)
-            this.currentMetions.push(match)
+            this.currentMentions.push(match)
           } else {
             const lastVal = typeof content.at(-1) === 'string'
               ? content.pop()
@@ -249,7 +250,7 @@ export default {
       this.appendMentionByIndex(index)
     },
 
-    handleSroll () {
+    handleScroll () {
       if (this.type !== 'textarea' || !this.dropdownVisible) {
         return
       }
@@ -260,12 +261,12 @@ export default {
       const oAt = oContainer.querySelector(`.${DOM_CLASSES.AT}`)
 
       const { top, bottom } = oContainer.querySelector(`.${DOM_CLASSES.INPUT}`).getBoundingClientRect()
-      const { x, y, avariableWidth, avariableHeight } = computePosition(oAt, oDropdown)
+      const { x, y, availableWidth, availableHeight } = computePosition(oAt, oDropdown)
       Object.assign(oDropdown.style, {
         left: `${x}px`,
         top: `${Math.min(bottom, Math.max(top, y))}px`,
-        width: `${avariableWidth}px`,
-        height: `${avariableHeight}px`
+        width: `${availableWidth}px`,
+        height: `${availableHeight}px`
       })
     },
 
@@ -274,7 +275,7 @@ export default {
         currentOptions
       } = this
       const item = currentOptions[index]
-      this.currentMetions.push(item)
+      this.currentMentions.push(item)
 
       // 1. 清除输入内容
       const range = new Range()
@@ -289,18 +290,23 @@ export default {
       this.close()
     },
 
-    handleBeforeinput (e) {
-      const { maxLength } = this
+    handleBeforeInput (e) {
+      const { maxLength, open } = this
 
-      const value = e.target.innerText
-      if (maxLength && value.length > maxLength) {
+      const { target, data } = e
+      const value = target.innerText
+
+      // 如果设置了输入长度限制，同时当前的操作类型是输入内容
+      // 并且输入后的长度超过限制，则阻止输入
+      if (integerValidator(maxLength) && value.length > maxLength) {
         e.preventDefault()
         return
       }
 
       // 输入 `@` 符号时，展开 Mentions 列表
-      if (e.data === '@' && !this.dropdownVisible) {
+      if (data === '@' && !this.dropdownVisible) {
         e.preventDefault()
+
         const range = window.getSelection().getRangeAt(0)
 
         const oAt = createAtElement()
@@ -308,11 +314,11 @@ export default {
         range.insertNode(oAt)
         setRangeAfterNode(oAt.firstChild)
 
-        this.open()
+        open()
       }
     },
 
-    handleInput (e) {
+    async handleInput (e) {
       const { data, inputType, target } = e
 
       const value = target.innerText
@@ -365,8 +371,8 @@ export default {
       Object.assign(oDropdown.style, {
         left: `${rect.x}px`,
         top: `${rect.y}px`,
-        width: `${rect.avariableWidth}px`,
-        height: `${rect.avariableHeight}px`
+        width: `${rect.availableWidth}px`,
+        height: `${rect.availableHeight}px`
       })
     },
 
@@ -421,11 +427,10 @@ export default {
           {
             currentOptions.map((option, index) => (
               <li
-                class={`${DOM_CLASSES.DROPDOWN_LIST_OPTION} ${
-                  activeOptionIdx === index
+                class={ `${DOM_CLASSES.DROPDOWN_LIST_OPTION} ${activeOptionIdx === index
                     ? 'active'
                     : ''
-                }`}
+                  }` }
                 data-value={ option.value }
                 onMouseenter={ () => this.handleDropdownListOptionMouseenter(index) }
                 onMousedown={ e => this.handleDropdownListOptionMousedown(index, e) }
@@ -450,10 +455,10 @@ export default {
           contenteditable
           data-type={ this.type }
           onKeydown={ this.handleKeydown }
-          onBeforeinput={ this.handleBeforeinput }
+          onBeforeinput={ this.handleBeforeInput }
           onInput={ this.handleInput }
           onClick={ this.handleClick }
-          onScroll={ this.handleSroll }
+          onScroll={ this.handleScroll }
         >
           {
             this.content.map(item => {
@@ -493,4 +498,5 @@ export default {
 }
 </script>
 
-<style src="./style.scss" lang="scss" scoped></style>
+<style src="./style.scss" lang="scss" scoped>
+</style>
