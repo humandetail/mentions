@@ -1,20 +1,39 @@
+.vue-mentions__container {
+  position: relative;
+}
+
+.vue-mentions__input {
+  padding: 8px;
+  font-size: 16px;
+  line-height: 1.5;
+  border: 1px solid #e1e1e1;
+  border-radius: 4px;
+
+  &[data-type="textarea"] {
+    height: 48px;
+    overflow: auto;
+    resize: both;
+  }
+}
+
 .vue-mentions__mention {
   font-style: normal;
 }
 
 .vue-mentions__at {
-  position: absolute;
-  left: 0;
-  top: 0;
+  display: none;
+  position: relative;
   width: 1px;
   height: 1px;
-  opacity: 0;
+  vertical-align: bottom;
+  background-color: red;
 }
 .vue-mentions__dropdown {
-  position: absolute;
+  position: fixed;
   left: 0;
   top: 0;
   width: max-content;
+  z-index: 2147483647;
 
   .vue-mentions__dropdown-list {
     list-style: none;
@@ -36,26 +55,6 @@
       &.active {
         background-color: #efefef;
       }
-    }
-  }
-
-  .vue-mentions__dropdown-arrow {
-    position: absolute;
-    left: 0;
-    transform: translateX(-50%);
-
-    &.arrow-top {
-      bottom: -10px;
-      border-top: 10px solid #333;
-      border-left: 6px solid transparent;
-      border-right: 6px solid transparent;
-    }
-
-    &.arrow-bottom {
-      top: -10px;
-      border-bottom: 10px solid #333;
-      border-left: 6px solid transparent;
-      border-right: 6px solid transparent;
     }
   }
 }

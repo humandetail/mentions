@@ -1,12 +1,5 @@
 <script lang="jsx">
-import {
-  computePosition,
-  size,
-  autoPlacement,
-  arrow
-} from '@floating-ui/dom'
-
-import { getMatchMention } from './utils.ts'
+import { getMatchMention, computePosition, createAtElement, createMentionElement, insertNodeAfterRange, setRangeAfterNode } from './utils.ts'
 
 import { DOM_CLASSES } from './config.ts'
 
@@ -112,7 +105,7 @@ export default {
       const { dropdownVisible, intersectionObserver } = this
       if (dropdownVisible && intersectionObserver) {
         this.$nextTick(() => {
-          intersectionObserver.observe(document.querySelector('.vue-mentions__dropdown-list-option.active'))
+          intersectionObserver.observe(document.querySelector(`.${DOM_CLASSES.DROPDOWN_LIST_OPTION}.active`))
         })
       }
       this.$emit('active-option-change', this.localOptions[idx])
@@ -256,42 +249,43 @@ export default {
       this.appendMentionByIndex(index)
     },
 
+    handleSroll () {
+      if (this.type !== 'textarea' || !this.dropdownVisible) {
+        return
+      }
+
+      const oContainer = this.$refs.Container
+
+      const oDropdown = oContainer.querySelector(`.${DOM_CLASSES.DROPDOWN}`)
+      const oAt = oContainer.querySelector(`.${DOM_CLASSES.AT}`)
+
+      const { top, bottom } = oContainer.querySelector(`.${DOM_CLASSES.INPUT}`).getBoundingClientRect()
+      const { x, y, avariableWidth, avariableHeight } = computePosition(oAt, oDropdown)
+      Object.assign(oDropdown.style, {
+        left: `${x}px`,
+        top: `${Math.min(bottom, Math.max(top, y))}px`,
+        width: `${avariableWidth}px`,
+        height: `${avariableHeight}px`
+      })
+    },
+
     appendMentionByIndex (index) {
       const {
-        currentOptions,
-        filterValue
+        currentOptions
       } = this
       const item = currentOptions[index]
       this.currentMetions.push(item)
 
-      const range = new Range()
-
-      const selection = window.getSelection()
-      const {
-        focusNode,
-        focusOffset
-      } = selection
-
       // 1. 清除输入内容
-      range.setStart(focusNode, Math.max(0, focusOffset - (filterValue?.length || 0) - 1))
-      range.setEnd(focusNode, focusOffset)
+      const range = new Range()
+      range.selectNode(this.$refs.Container.querySelector(`.${DOM_CLASSES.AT}`))
       range.deleteContents()
 
-      // 2. 插入 @Mention 内容块
-      const oM = document.createElement('em')
-      oM.className = DOM_CLASSES.MENTION
-      oM.setAttribute('data-id', item.value)
-      oM.setAttribute('contenteditable', false)
-      oM.innerText = `@${item.label} `
-      range.insertNode(oM)
+      // 2. 插入 @Mention 内容块并让光标位置插入块之后
+      const oM = createMentionElement(item.label, item.value)
+      insertNodeAfterRange(oM)
 
-      // 3. 让光标位置插入块之后
-      range.setStartAfter(oM)
-      range.setEndAfter(oM)
-      selection.removeAllRanges()
-      selection.addRange(range)
-
-      // 4. 关闭 dropdown
+      // 3. 关闭 dropdown
       this.close()
     },
 
@@ -301,6 +295,20 @@ export default {
       const value = e.target.innerText
       if (maxLength && value.length > maxLength) {
         e.preventDefault()
+        return
+      }
+
+      // 输入 `@` 符号时，展开 Mentions 列表
+      if (e.data === '@' && !this.dropdownVisible) {
+        e.preventDefault()
+        const range = window.getSelection().getRangeAt(0)
+
+        const oAt = createAtElement()
+
+        range.insertNode(oAt)
+        setRangeAfterNode(oAt.firstChild)
+
+        this.open()
       }
     },
 
@@ -311,27 +319,6 @@ export default {
 
       this.currentInputValue = value
       this.$emit('change', value)
-
-      // 输入 `@` 符号时，展开 Mentions 列表
-      if (data === '@' && !this.dropdownVisible) {
-        // e.preventDefault()
-        const selection = window.getSelection()
-
-        const range = document.createRange()
-        range.selectNode(selection.focusNode)
-        const rect = range.getBoundingClientRect()
-
-        const oAt = this.$refs.Container.querySelector(`.${DOM_CLASSES.AT}`)
-
-        Object.assign(oAt.style, {
-          // left + width * (offset / lenth)
-          left: `${rect.left + rect.width * selection.focusOffset / selection.focusNode.textContent.length}px`,
-          top: `${rect.top}px`,
-          height: `${rect.height}px`
-        })
-        this.open()
-        return
-      }
 
       const { filterValue, dropdownVisible } = this
 
@@ -371,46 +358,33 @@ export default {
       const oRoot = this.$refs.Container
 
       const oContrast = oRoot.querySelector(`.${DOM_CLASSES.AT}`)
-      const oDropdown = oRoot.querySelector(`${DOM_CLASSES.DROPDOWN}`)
-      const oArrow = oDropdown.querySelector(`${DOM_CLASSES.DROPDOWN_ARROW}`)
+      const oDropdown = oRoot.querySelector(`.${DOM_CLASSES.DROPDOWN}`)
+      // const oArrow = oDropdown.querySelector(`.${DOM_CLASSES.DROPDOWN_ARROW}`)
 
-      const position = await computePosition(oContrast, oDropdown, {
-        middleware: [
-          autoPlacement({
-            allowedPlacements: ['top', 'bottom']
-          }),
-          size({
-            apply ({ availableWidth, availableHeight, elements }) {
-              Object.assign(elements.floating.style, {
-                maxWidth: `${availableWidth}px`,
-                height: `${Math.min(200, availableHeight)}px`
-              })
-            }
-          }),
-          arrow({
-            element: oArrow
-          })
-        ]
-      })
-
+      const rect = computePosition(oContrast, oDropdown)
       Object.assign(oDropdown.style, {
-        left: `${position.x}px`,
-        top: `${position.y}px`
-      })
-      const { x, y } = position.middlewareData.arrow
-
-      oArrow.classList.remove('arrow-top')
-      oArrow.classList.remove('arrow-bottom')
-      oArrow.classList.add(`arrow-${position.placement}`)
-      Object.assign(oArrow.style, {
-        left: x != null ? `${x}px` : '',
-        top: y != null ? `${y}px` : ''
+        left: `${rect.x}px`,
+        top: `${rect.y}px`,
+        width: `${rect.avariableWidth}px`,
+        height: `${rect.avariableHeight}px`
       })
     },
 
     close () {
       this.filterValue = undefined
       this.dropdownVisible = false
+
+      const oContainer = this.$refs.Container
+      const oAt = oContainer.querySelector(`.${DOM_CLASSES.AT}`)
+
+      if (oAt) {
+        const text = oAt.textContent.slice(1) // ignore `@`
+        oAt.remove()
+        if (text.length > 0) {
+          insertNodeAfterRange(document.createTextNode(text))
+        }
+      }
+
       this.$emit('close')
     },
 
@@ -424,7 +398,6 @@ export default {
               ? this.renderDropdownEmpty()
               : this.renderMentionsList()
           }
-          <div class={ DOM_CLASSES.DROPDOWN_ARROW }></div>
         </div>
       )
     },
@@ -448,7 +421,7 @@ export default {
           {
             currentOptions.map((option, index) => (
               <li
-                class={`${DOM_CLASSES.DROPDOWN_LIST_OPTION}${
+                class={`${DOM_CLASSES.DROPDOWN_LIST_OPTION} ${
                   activeOptionIdx === index
                     ? 'active'
                     : ''
@@ -472,15 +445,15 @@ export default {
         ref="Container"
         class={ DOM_CLASSES.CONTAINER }
       >
-        { this.dropdownVisible ? this.renderDropdown() : null }
-        <div class={ DOM_CLASSES.AT }></div>
         <div
           class={ DOM_CLASSES.INPUT }
           contenteditable
+          data-type={ this.type }
           onKeydown={ this.handleKeydown }
           onBeforeinput={ this.handleBeforeinput }
           onInput={ this.handleInput }
           onClick={ this.handleClick }
+          onScroll={ this.handleSroll }
         >
           {
             this.content.map(item => {
@@ -510,6 +483,9 @@ export default {
               )
             })
           }
+        </div>
+        <div>
+          { this.dropdownVisible ? this.renderDropdown() : null }
         </div>
       </div>
     )
