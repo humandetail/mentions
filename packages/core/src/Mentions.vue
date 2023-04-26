@@ -52,7 +52,7 @@ export default {
       currentInputValue: undefined,
       content: [],
       // 当前匹配到的所有 Mentions
-      currentMetions: [],
+      currentMentions: [],
 
       filterValue: undefined,
 
@@ -112,7 +112,7 @@ export default {
       this.$emit('active-option-change', this.localOptions[idx])
     },
 
-    currentMetions (mentions) {
+    currentMentions (mentions) {
       this.$emit('mentions-change', mentions)
     }
   },
@@ -164,7 +164,7 @@ export default {
           if (match) {
             content.push(match)
             val = val.slice(match.label.length + 1)
-            this.currentMetions.push(match)
+            this.currentMentions.push(match)
           } else {
             const lastVal = typeof content.at(-1) === 'string'
               ? content.pop()
@@ -250,7 +250,7 @@ export default {
       this.appendMentionByIndex(index)
     },
 
-    handleSroll () {
+    handleScroll () {
       if (this.type !== 'textarea' || !this.dropdownVisible) {
         return
       }
@@ -261,12 +261,12 @@ export default {
       const oAt = oContainer.querySelector(`.${DOM_CLASSES.AT}`)
 
       const { top, bottom } = oContainer.querySelector(`.${DOM_CLASSES.INPUT}`).getBoundingClientRect()
-      const { x, y, avariableWidth, avariableHeight } = computePosition(oAt, oDropdown)
+      const { x, y, availableWidth, availableHeight } = computePosition(oAt, oDropdown)
       Object.assign(oDropdown.style, {
         left: `${x}px`,
         top: `${Math.min(bottom, Math.max(top, y))}px`,
-        width: `${avariableWidth}px`,
-        height: `${avariableHeight}px`
+        width: `${availableWidth}px`,
+        height: `${availableHeight}px`
       })
     },
 
@@ -275,7 +275,7 @@ export default {
         currentOptions
       } = this
       const item = currentOptions[index]
-      this.currentMetions.push(item)
+      this.currentMentions.push(item)
 
       // 1. 清除输入内容
       const range = new Range()
@@ -290,7 +290,7 @@ export default {
       this.close()
     },
 
-    handleBeforeinput (e) {
+    handleBeforeInput (e) {
       const { maxLength, open } = this
 
       const { target, data } = e
@@ -371,8 +371,8 @@ export default {
       Object.assign(oDropdown.style, {
         left: `${rect.x}px`,
         top: `${rect.y}px`,
-        width: `${rect.avariableWidth}px`,
-        height: `${rect.avariableHeight}px`
+        width: `${rect.availableWidth}px`,
+        height: `${rect.availableHeight}px`
       })
     },
 
@@ -455,10 +455,10 @@ export default {
           contenteditable
           data-type={ this.type }
           onKeydown={ this.handleKeydown }
-          onBeforeinput={ this.handleBeforeinput }
+          onBeforeinput={ this.handleBeforeInput }
           onInput={ this.handleInput }
           onClick={ this.handleClick }
-          onScroll={ this.handleSroll }
+          onScroll={ this.handleScroll }
         >
           {
             this.content.map(item => {

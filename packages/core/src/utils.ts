@@ -20,11 +20,11 @@ export const computePosition = (contrastElement: HTMLElement, targetElement: HTM
   const targetRect = targetElement.getBoundingClientRect()
   const { innerWidth, innerHeight } = window
 
-  const avariableWidth = Math.min(innerWidth, targetRect.width)
-  let avariableHeight = Math.min(innerHeight, targetRect.height)
+  const availableWidth = Math.min(innerWidth, targetRect.width)
+  let availableHeight = Math.min(innerHeight, targetRect.height)
 
-  const x = contrastRect.left + avariableWidth > innerWidth
-    ? innerWidth - avariableWidth
+  const x = contrastRect.left + availableWidth > innerWidth
+    ? innerWidth - availableWidth
     : contrastRect.left
   let y = contrastRect.bottom
 
@@ -33,23 +33,23 @@ export const computePosition = (contrastElement: HTMLElement, targetElement: HTM
       // 无法正确放置，尝试选择最优位置，并重置 target 高度
       if (Math.abs(contrastRect.bottom + targetRect.height - innerHeight) > Math.abs(contrastRect.top - targetRect.height)) {
         // 上面剩余位置多，放置在上面
-        avariableHeight = contrastRect.top
+        availableHeight = contrastRect.top
         y = 0
       } else {
         // 下面剩余位置多，放置在下面
-        avariableHeight = innerHeight - y
+        availableHeight = innerHeight - y
       }
     } else {
       // 放在上面
-      y = contrastRect.top - avariableHeight
+      y = contrastRect.top - availableHeight
     }
   }
 
   return {
     x,
     y,
-    avariableWidth,
-    avariableHeight
+    availableWidth,
+    availableHeight
   }
 }
 
