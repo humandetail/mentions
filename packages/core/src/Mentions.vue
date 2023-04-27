@@ -375,11 +375,10 @@ export default {
     },
 
     handleMousedown () {
-      document.addEventListener('mouseup', this.handleMouseup)
+      document.addEventListener('mouseup', this.handleMouseup, { once: true })
     },
 
     handleMouseup () {
-      document.removeEventListener('mouseup', this.handleMouseup)
       const selection = window.getSelection()
       const { anchorNode, focusNode } = selection
       const range = selection.getRangeAt(0)
