@@ -1,7 +1,15 @@
 <script lang="jsx">
-import { getMatchMention, computePosition, createAtElement, createMentionElement, insertNodeAfterRange, setRangeAfterNode } from './utils.ts'
+import {
+  getMatchMention,
+  computePosition,
+  createAtElement,
+  createMentionElement,
+  insertNodeAfterRange,
+  setRangeAfterNode,
+  integerValidator
+} from './utils.ts'
 
-import { DOM_CLASSES, integerValidator } from './config.ts'
+import { DOM_CLASSES } from './config.ts'
 
 export default {
   name: 'VueMentions',

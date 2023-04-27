@@ -85,3 +85,7 @@ export const setRangeAfterNode = (node: Node) => {
   selection.removeAllRanges()
   selection.addRange(range)
 }
+
+export function integerValidator (value: number) {
+  return !Number.isNaN(value) && value >= 0
+}

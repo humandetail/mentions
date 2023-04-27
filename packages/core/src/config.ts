@@ -19,7 +19,3 @@ export const DOM_CLASSES = (() => {
     }
   }, {})
 })()
-
-export function integerValidator (value: number) {
-  return !Number.isNaN(value) && value >= 0
-}
