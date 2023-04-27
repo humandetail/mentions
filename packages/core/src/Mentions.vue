@@ -1,7 +1,17 @@
 <script lang="jsx">
-import { computePosition, createAtElement, createMentionElement, insertNodeAfterRange, setRangeAfterNode, isNodeAfterNode, isMention, valueFormatter } from './utils.ts'
+import {
+  computePosition,
+  createAtElement,
+  createMentionElement,
+  insertNodeAfterRange,
+  integerValidator,
+  isMention,
+  isNodeAfterNode,
+  setRangeAfterNode,
+  valueFormatter
+} from './utils.ts'
 
-import { DOM_CLASSES, integerValidator, MENTION_REG } from './config.ts'
+import { DOM_CLASSES, INSERT_TEXT_TYPE, MENTION_REG } from './config.ts'
 
 export default {
   name: 'VueMentions',
@@ -34,16 +44,21 @@ export default {
       default: 'value'
     },
 
-    filterOption: Function,
-
-    maxLength: {
-      type: Number,
-      default: NaN,
-      validator: integerValidator
+    filterOption: {
+      type: Function
     },
 
-    dropdownMaxWidth: Number,
-    dropdownMaxHeight: Number
+    maxLength: {
+      type: Number
+    },
+
+    dropdownMaxWidth: {
+      type: Number
+    },
+
+    dropdownMaxHeight: {
+      type: Number
+    }
   },
 
   data () {
@@ -286,12 +301,16 @@ export default {
     handleBeforeInput (e) {
       const { maxLength, open } = this
 
-      const { target, data } = e
+      const { target, data, inputType } = e
       const value = target.innerText
 
       // 如果设置了输入长度限制，同时当前的操作类型是输入内容
       // 并且输入后的长度超过限制，则阻止输入
-      if (integerValidator(maxLength) && value.length > maxLength) {
+      if (
+        integerValidator(maxLength) &&
+        (value + data).length > maxLength &&
+        INSERT_TEXT_TYPE.includes(inputType)
+      ) {
         e.preventDefault()
         return
       }
@@ -364,11 +383,10 @@ export default {
     },
 
     handleMousedown () {
-      document.addEventListener('mouseup', this.handleMouseup)
+      document.addEventListener('mouseup', this.handleMouseup, { once: true })
     },
 
     handleMouseup () {
-      document.removeEventListener('mouseup', this.handleMouseup)
       const selection = window.getSelection()
       const { anchorNode, focusNode } = selection
       const range = selection.getRangeAt(0)

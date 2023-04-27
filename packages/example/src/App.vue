@@ -17,8 +17,8 @@
 // import { onMounted } from 'vue'
 
 import { ref } from 'vue'
-import { VueMentions } from 'vue-mentions'
-import 'vue-mentions/vue-mentions.css'
+import { VueMentions } from '../../core/index'
+import '../../core/src/style.scss'
 
 const options = [
   { label: 'Detail', value: 1 },
@@ -33,7 +33,6 @@ const options = [
 ]
 
 const value = ref(
-  // '你好@张 三 , 这里是@Detail 和@libon ，@张 三 Hello wor\nld！'
   '你好#{name:张三,id:3},这里是#{name:Detail,id:1}和#{name:libon,id:2}，#{name:张三,id:3}Hello wor\nld！'
 )
 </script>

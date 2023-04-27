@@ -4,9 +4,10 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev:core": "cd packages/core && pnpm run build --watch",
-    "dev": "concurrently \"pnpm run dev:core\" \"cd packages/example && pnpm run dev\"",
-    "build": "cd packages/core && tsc && vite build",
+    "dev:core": "pnpm --filter ./packages/core dev",
+    "dev:example": "pnpm --filter ./packages/example dev",
+    "dev": "concurrently \"pnpm run dev:core\" \"pnpm run dev:example",
+    "build": "pnpm --filter ./packages/core build",
     "prepare": "husky install"
   },
   "devDependencies": {

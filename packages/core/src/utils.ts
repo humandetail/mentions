@@ -88,6 +88,10 @@ export const isMention = (node: Element) => {
   return node.nodeType === 1 && node.classList.contains(DOM_CLASSES.MENTION)
 }
 
+export function integerValidator (value: number) {
+  return !Number.isNaN(value) && value >= 0
+}
+
 export const valueFormatter = (innerHTML: string = '') => {
   const oDiv = document.createElement('div')
   oDiv.innerHTML = innerHTML.replace(MENTION_DOM_REG, (_, $id, $name) => `#{name:${$name},id:${$id}}`)
