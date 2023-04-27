@@ -1,12 +1,14 @@
 <script lang="jsx">
 import {
-  getMatchMention,
   computePosition,
   createAtElement,
   createMentionElement,
+  getMatchMention,
   insertNodeAfterRange,
-  setRangeAfterNode,
-  integerValidator
+  integerValidator,
+  isMention,
+  isNodeAfterNode,
+  setRangeAfterNode
 } from './utils.ts'
 
 import { DOM_CLASSES } from './config.ts'
@@ -48,7 +50,10 @@ export default {
       type: Number,
       default: NaN,
       validator: integerValidator
-    }
+    },
+
+    dropdownMaxWidth: Number,
+    dropdownMaxHeight: Number
   },
 
   data () {
@@ -137,21 +142,23 @@ export default {
 
   methods: {
     initObserver () {
-      const oRoot = this.$refs.Container
       this.intersectionObserver = new IntersectionObserver(entries => {
         const { intersectionRatio } = entries[0]
 
-        this.intersectionObserver.unobserve(oRoot.querySelector(`.${DOM_CLASSES.DROPDOWN_LIST_OPTION}.active`))
+        const oList = this.$refs.Container.querySelector(`.${DOM_CLASSES.DROPDOWN_LIST}`)
+        const oActive = oList.querySelector(`.${DOM_CLASSES.DROPDOWN_LIST_OPTION}.active`)
+        this.intersectionObserver.unobserve(oActive)
         if (intersectionRatio === 1) {
           return
         }
 
-        const oList = oRoot.querySelector(`.${DOM_CLASSES.DROPDOWN_LIST}`)
         if (!oList) {
           return
         }
         const { activeOptionIdx } = this
-        oList.scrollTop = activeOptionIdx * 28 + 4 // +4 padding-top
+        const optionHeight = oActive.getBoundingClientRect().height
+        const paddingTop = parseInt(window.getComputedStyle(oList).paddingTop)
+        oList.scrollTop = activeOptionIdx * optionHeight + (isNaN(paddingTop) ? 0 : paddingTop) // +4 padding-top
       })
     },
 
@@ -358,13 +365,51 @@ export default {
       }
     },
 
+    handleMousedown () {
+      document.addEventListener('mouseup', this.handleMouseup)
+    },
+
+    handleMouseup () {
+      document.removeEventListener('mouseup', this.handleMouseup)
+      const selection = window.getSelection()
+      const { anchorNode, focusNode } = selection
+      const range = selection.getRangeAt(0)
+
+      // 单击 mention
+      if (
+        anchorNode === focusNode &&
+        (
+          isMention(anchorNode) ||
+          isMention(anchorNode.parentNode)
+        )
+      ) {
+        range.selectNode(
+          isMention(anchorNode)
+            ? anchorNode
+            : anchorNode.parentNode
+        )
+        selection.removeAllRanges()
+        selection.addRange(range)
+        return
+      }
+
+      // 结束点选中 mention
+      if (isMention(anchorNode) || isMention(focusNode)) {
+        if (isNodeAfterNode(anchorNode, focusNode)) {
+          range.setEndAfter(focusNode)
+        } else {
+          range.setStartBefore(focusNode)
+        }
+      }
+    },
+
     async open () {
       this.dropdownVisible = true
       await this.$nextTick()
       this.$emit('open')
 
       // 默认选中第一个 options
-      const { currentOptions } = this
+      const { currentOptions, dropdownMaxWidth, dropdownMaxHeight } = this
       if (currentOptions.length > 0) {
         this.activeOptionIdx = 0
       }
@@ -373,12 +418,13 @@ export default {
 
       const oContrast = oRoot.querySelector(`.${DOM_CLASSES.AT}`)
       const oDropdown = oRoot.querySelector(`.${DOM_CLASSES.DROPDOWN}`)
-      // const oArrow = oDropdown.querySelector(`.${DOM_CLASSES.DROPDOWN_ARROW}`)
 
       const rect = computePosition(oContrast, oDropdown)
       Object.assign(oDropdown.style, {
         left: `${rect.x}px`,
         top: `${rect.y}px`,
+        maxWidth: `${typeof dropdownMaxWidth === 'number' ? dropdownMaxWidth : rect.availableWidth}px`,
+        maxHeight: `${typeof dropdownMaxHeight === 'number' ? dropdownMaxHeight : rect.availableHeight}px`,
         width: `${rect.availableWidth}px`,
         height: `${rect.availableHeight}px`
       })
@@ -467,6 +513,7 @@ export default {
           onInput={ this.handleInput }
           onClick={ this.handleClick }
           onScroll={ this.handleScroll }
+          onMousedown={ this.handleMousedown }
         >
           {
             this.content.map(item => {
