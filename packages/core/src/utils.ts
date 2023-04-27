@@ -85,3 +85,19 @@ export const setRangeAfterNode = (node: Node) => {
   selection.removeAllRanges()
   selection.addRange(range)
 }
+
+/**
+ * 判断 node2 是否在 node1 之后
+ * @param {Node} node1
+ * @param {Node} node2
+ */
+export const isNodeAfterNode = (node1: Node, node2: Node) => {
+  return (node1.compareDocumentPosition(node2) & Node.DOCUMENT_POSITION_FOLLOWING) === Node.DOCUMENT_POSITION_FOLLOWING
+}
+
+/**
+ * 判断元素是否为 Mention 元素
+ */
+export const isMention = (node: Element) => {
+  return node.nodeType === 1 && node.classList.contains(DOM_CLASSES.MENTION)
+}

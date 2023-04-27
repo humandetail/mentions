@@ -1,5 +1,5 @@
 <script lang="jsx">
-import { getMatchMention, computePosition, createAtElement, createMentionElement, insertNodeAfterRange, setRangeAfterNode } from './utils.ts'
+import { getMatchMention, computePosition, createAtElement, createMentionElement, insertNodeAfterRange, setRangeAfterNode, isNodeAfterNode, isMention } from './utils.ts'
 
 import { DOM_CLASSES, integerValidator } from './config.ts'
 
@@ -119,6 +119,7 @@ export default {
 
   mounted () {
     this.initObserver()
+    // document.addEventListener('selectionchange', this.handleSelect)
   },
 
   beforeDestroy () {
@@ -350,6 +351,44 @@ export default {
       }
     },
 
+    handleMousedown (e) {
+      document.addEventListener('mouseup', this.handleMouseup)
+    },
+
+    handleMouseup () {
+      document.removeEventListener('mouseup', this.handleMouseup)
+      const selection = window.getSelection()
+      const { anchorNode, focusNode } = selection
+      const range = selection.getRangeAt(0)
+
+      // 单击 mention
+      if (
+        anchorNode === focusNode &&
+        (
+          isMention(anchorNode) ||
+          isMention(anchorNode.parentNode)
+        )
+      ) {
+        range.selectNode(
+          isMention(anchorNode)
+            ? anchorNode
+            : anchorNode.parentNode
+        )
+        selection.removeAllRanges()
+        selection.addRange(range)
+        return
+      }
+
+      // 结束点选中 mention
+      if (isMention(anchorNode) || isMention(focusNode)) {
+        if (isNodeAfterNode(anchorNode, focusNode)) {
+          range.setEndAfter(focusNode)
+        } else {
+          range.setStartBefore(focusNode)
+        }
+      }
+    },
+
     async open () {
       this.dropdownVisible = true
       await this.$nextTick()
@@ -365,7 +404,6 @@ export default {
 
       const oContrast = oRoot.querySelector(`.${DOM_CLASSES.AT}`)
       const oDropdown = oRoot.querySelector(`.${DOM_CLASSES.DROPDOWN}`)
-      // const oArrow = oDropdown.querySelector(`.${DOM_CLASSES.DROPDOWN_ARROW}`)
 
       const rect = computePosition(oContrast, oDropdown)
       Object.assign(oDropdown.style, {
@@ -459,6 +497,7 @@ export default {
           onInput={ this.handleInput }
           onClick={ this.handleClick }
           onScroll={ this.handleScroll }
+          onMousedown={ this.handleMousedown }
         >
           {
             this.content.map(item => {
