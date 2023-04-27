@@ -40,7 +40,10 @@ export default {
       type: Number,
       default: NaN,
       validator: integerValidator
-    }
+    },
+
+    dropdownMaxWidth: Number,
+    dropdownMaxHeight: Number
   },
 
   data () {
@@ -119,7 +122,6 @@ export default {
 
   mounted () {
     this.initObserver()
-    // document.addEventListener('selectionchange', this.handleSelect)
   },
 
   beforeDestroy () {
@@ -130,21 +132,23 @@ export default {
 
   methods: {
     initObserver () {
-      const oRoot = this.$refs.Container
       this.intersectionObserver = new IntersectionObserver(entries => {
         const { intersectionRatio } = entries[0]
 
-        this.intersectionObserver.unobserve(oRoot.querySelector(`.${DOM_CLASSES.DROPDOWN_LIST_OPTION}.active`))
+        const oList = this.$refs.Container.querySelector(`.${DOM_CLASSES.DROPDOWN_LIST}`)
+        const oActive = oList.querySelector(`.${DOM_CLASSES.DROPDOWN_LIST_OPTION}.active`)
+        this.intersectionObserver.unobserve(oActive)
         if (intersectionRatio === 1) {
           return
         }
 
-        const oList = oRoot.querySelector(`.${DOM_CLASSES.DROPDOWN_LIST}`)
         if (!oList) {
           return
         }
         const { activeOptionIdx } = this
-        oList.scrollTop = activeOptionIdx * 28 + 4 // +4 padding-top
+        const optionHeight = oActive.getBoundingClientRect().height
+        const paddingTop = parseInt(window.getComputedStyle(oList).paddingTop)
+        oList.scrollTop = activeOptionIdx * optionHeight + (isNaN(paddingTop) ? 0 : paddingTop) // +4 padding-top
       })
     },
 
@@ -351,7 +355,7 @@ export default {
       }
     },
 
-    handleMousedown (e) {
+    handleMousedown () {
       document.addEventListener('mouseup', this.handleMouseup)
     },
 
@@ -395,7 +399,7 @@ export default {
       this.$emit('open')
 
       // 默认选中第一个 options
-      const { currentOptions } = this
+      const { currentOptions, dropdownMaxWidth, dropdownMaxHeight } = this
       if (currentOptions.length > 0) {
         this.activeOptionIdx = 0
       }
@@ -409,6 +413,8 @@ export default {
       Object.assign(oDropdown.style, {
         left: `${rect.x}px`,
         top: `${rect.y}px`,
+        maxWidth: `${typeof dropdownMaxWidth === 'number' ? dropdownMaxWidth : rect.availableWidth}px`,
+        maxHeight: `${typeof dropdownMaxHeight === 'number' ? dropdownMaxHeight : rect.availableHeight}px`,
         width: `${rect.availableWidth}px`,
         height: `${rect.availableHeight}px`
       })

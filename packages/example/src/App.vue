@@ -6,6 +6,8 @@
       type="textarea"
       :value="value"
       :options="options"
+      :dropdownMaxWidth="100"
+      :dropdownMaxHeight="200"
       @change="value = $event"
     />
   </div>
