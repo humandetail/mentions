@@ -19,7 +19,6 @@
 .vue-mentions__mention {
   font-style: normal;
   white-space: pre-wrap;
-  // user-select: none;
 }
 
 .vue-mentions__dropdown {
@@ -50,5 +49,19 @@
         background-color: #efefef;
       }
     }
+  }
+
+  .vue-mentions__dropdown-empty {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 0;
+    border-radius: 4px;
+    border: 1px solid #e1e1e1;
+    white-space: nowrap;
+    font-size: 12px;
+    color: #ccc;
   }
 }

@@ -20,6 +20,7 @@ export const DOM_CLASSES = (() => {
   }, {})
 })()
 
+
 // https://cdn.staticaly.com/gh/w3c/input-events/v1/index.html#overview
 // https://rawgit.com/w3c/input-events/v1/index.html#interface-InputEvent-Attributes
 export const INSERT_TEXT_TYPE = [
@@ -38,3 +39,11 @@ export const INSERT_TEXT_TYPE = [
   'insertCompositionText',
   'insertLink'
 ]
+
+export function integerValidator (value: number) {
+  return !Number.isNaN(value) && value >= 0
+}
+
+export const MENTION_REG = /^#{name:([\w\W]+?),id:([\w\W]+?)}/
+
+export const MENTION_DOM_REG = /<\s*em[^>]*class="[^"]*mention[^"]*"[^>]*data-id="([^"]*)"[^>]*data-name="([^"]*)"[^>]*>[^<]*<\/\s*em\s*>/gi

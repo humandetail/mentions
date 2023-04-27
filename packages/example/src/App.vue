@@ -33,6 +33,6 @@ const options = [
 ]
 
 const value = ref(
-  ''
+  '你好#{name:张三,id:3},这里是#{name:Detail,id:1}和#{name:libon,id:2}，#{name:张三,id:3}Hello wor\nld！'
 )
 </script>
