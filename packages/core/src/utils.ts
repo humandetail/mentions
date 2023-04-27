@@ -1,19 +1,4 @@
-import { MentionOption } from '../types/vue-mentions'
-import { DOM_CLASSES } from './config'
-export const getMatchMention = (options: MentionOption[], input: string) => {
-  let match = null
-  let option = null
-  for (let i = 0; i < options.length; i++) {
-    match = input.match(new RegExp(`^@${options[i].label}\\s{1}?`))
-
-    if (match) {
-      option = options[i]
-      break
-    }
-  }
-
-  return option
-}
+import { DOM_CLASSES, MENTION_DOM_REG } from './config'
 
 export const computePosition = (contrastElement: HTMLElement, targetElement: HTMLElement) => {
   const contrastRect = contrastElement.getBoundingClientRect()
@@ -60,13 +45,14 @@ export const createAtElement = () => {
   return oAt
 }
 
-export const createMentionElement = (label: string, value: any) => {
+export const createMentionElement = (name: string, id: string | number) => {
   const oM = document.createElement('em')
   oM.className = DOM_CLASSES.MENTION
-  oM.setAttribute('data-id', value)
+  oM.setAttribute('data-id', `${id}`)
+  oM.setAttribute('data-name', name)
   // @ts-ignore
   oM.setAttribute('contenteditable', false)
-  oM.innerText = `@${label} `
+  oM.innerText = `@${name} `
   return oM
 }
 
@@ -100,4 +86,10 @@ export const isNodeAfterNode = (node1: Node, node2: Node) => {
  */
 export const isMention = (node: Element) => {
   return node.nodeType === 1 && node.classList.contains(DOM_CLASSES.MENTION)
+}
+
+export const valueFormatter = (innerHTML: string = '') => {
+  const oDiv = document.createElement('div')
+  oDiv.innerHTML = innerHTML.replace(MENTION_DOM_REG, (_, $id, $name) => `#{name:${$name},id:${$id}}`)
+  return oDiv.innerText
 }

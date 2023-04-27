@@ -23,3 +23,7 @@ export const DOM_CLASSES = (() => {
 export function integerValidator (value: number) {
   return !Number.isNaN(value) && value >= 0
 }
+
+export const MENTION_REG = /^#{name:([\w\W]+?),id:([\w\W]+?)}/
+
+export const MENTION_DOM_REG = /<\s*em[^>]*class="[^"]*mention[^"]*"[^>]*data-id="([^"]*)"[^>]*data-name="([^"]*)"[^>]*>[^<]*<\/\s*em\s*>/gi

@@ -1,7 +1,7 @@
 <script lang="jsx">
-import { getMatchMention, computePosition, createAtElement, createMentionElement, insertNodeAfterRange, setRangeAfterNode, isNodeAfterNode, isMention } from './utils.ts'
+import { computePosition, createAtElement, createMentionElement, insertNodeAfterRange, setRangeAfterNode, isNodeAfterNode, isMention, valueFormatter } from './utils.ts'
 
-import { DOM_CLASSES, integerValidator } from './config.ts'
+import { DOM_CLASSES, integerValidator, MENTION_REG } from './config.ts'
 
 export default {
   name: 'VueMentions',
@@ -153,37 +153,25 @@ export default {
     },
 
     formatContent (val) {
-      const { localOptions } = this
-
       const content = []
+
       while (val.length) {
-        if (val.indexOf('@') > 0) {
+        const match = val.match(MENTION_REG)
+        if (match) {
+          const option = {
+            label: match[1],
+            value: match[2]
+          }
+          content.push(option)
+          this.currentMentions.push(option)
+          val = val.slice(match[0].length)
+        } else {
           const lastVal = typeof content.at(-1) === 'string'
             ? content.pop()
             : ''
-          content.push(lastVal + val.slice(0, val.indexOf('@'))) // consume `@`
-          val = val.slice(val.indexOf('@'))
 
-          const match = getMatchMention(localOptions, val)
-
-          if (match) {
-            content.push(match)
-            val = val.slice(match.label.length + 1)
-            this.currentMentions.push(match)
-          } else {
-            const lastVal = typeof content.at(-1) === 'string'
-              ? content.pop()
-              : ''
-            content.push(lastVal + val.slice(0, 1)) // consume `@`
-            val = val.slice(1)
-          }
-        } else {
-          content.push(
-            this.type === 'input'
-              ? val.replace(/\n/g, '')
-              : val
-          )
-          val = ''
+          content.push(`${lastVal}${val[0]}`)
+          val = val.slice(1)
         }
       }
 
@@ -323,12 +311,32 @@ export default {
       }
     },
 
+    getMentionsByValueChange () {
+      let { currentInputValue: val } = this
+      let match
+
+      const currentMentions = []
+      while (val?.length) {
+        match = val.match(MENTION_REG)
+        if (!match) {
+          val = val.slice(1)
+        } else {
+          currentMentions.push({
+            label: match[1],
+            value: match[2]
+          })
+          val = val.slice(match[0].length)
+        }
+      }
+      this.currentMentions = currentMentions
+    },
+
     async handleInput (e) {
       const { data, inputType, target } = e
 
-      const value = target.innerText
-
+      const value = valueFormatter(target.innerHTML)
       this.currentInputValue = value
+      this.getMentionsByValueChange()
       this.$emit('change', value)
 
       const { filterValue, dropdownVisible } = this
@@ -348,7 +356,7 @@ export default {
 
           this.$nextTick(() => {
             if (this.currentOptions.length === 0) {
-              // this.close()
+              this.close()
             }
           })
         }
@@ -533,6 +541,7 @@ export default {
                 <em
                   class={ DOM_CLASSES.MENTION }
                   data-id={ item.value }
+                  data-name={ item.label }
                   contenteditable={ false }
                 >@{ item.label + ' ' }</em>
               )
