@@ -18,17 +18,10 @@
 
 .vue-mentions__mention {
   font-style: normal;
-  white-space: pre;
+  white-space: pre-wrap;
+  // user-select: none;
 }
 
-.vue-mentions__at {
-  display: none;
-  position: relative;
-  width: 1px;
-  height: 1px;
-  vertical-align: bottom;
-  background-color: red;
-}
 .vue-mentions__dropdown {
   position: fixed;
   left: 0;
