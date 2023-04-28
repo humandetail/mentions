@@ -454,7 +454,7 @@ export default {
       const oAt = oContainer.querySelector(`.${DOM_CLASSES.AT}`)
 
       if (oAt) {
-        const text = oAt.textContent.slice(1) // ignore `@`
+        const text = oAt.textContent
         oAt.remove()
         if (text.length > 0) {
           insertNodeAfterRange(document.createTextNode(text))
