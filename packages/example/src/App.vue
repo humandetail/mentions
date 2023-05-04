@@ -8,6 +8,7 @@
       :options="options"
       :dropdownMaxWidth="100"
       :dropdownMaxHeight="200"
+      :max-length="90"
       @change="value = $event"
     />
   </div>
