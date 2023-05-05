@@ -44,10 +44,12 @@ export default {
       type: Array,
       default: () => []
     },
+
     labelFieldName: {
       type: String,
       default: 'label'
     },
+
     valueFieldName: {
       type: String,
       default: 'value'
@@ -374,6 +376,20 @@ export default {
         return
       }
       const { childNodes, innerHTML } = oEditor
+
+      // 如果内容已经为空
+      if (!innerHTML) {
+        Object.assign(this.state, {
+          innerHTML: '',
+          anchorNodeIdx: 0,
+          anchorOffset: 0,
+          focusNodeIdx: 0,
+          focusOffset: 0
+        })
+
+        return
+      }
+
       let {
         anchorNode,
         anchorOffset,
@@ -390,21 +406,32 @@ export default {
         anchorOffset += childNodes[anchorNodeIdx - 1].nodeValue.length
       } else if (anchorNode === oEditor) {
         anchorNodeIdx = anchorOffset
-        anchorOffset = childNodes[anchorNodeIdx].nodeValue.length
-        while (childNodes[anchorNodeIdx - 1]?.nodeType === 3) {
-          anchorNodeIdx -= 1
-          anchorOffset += childNodes[anchorNodeIdx].nodeValue.length
+        anchorOffset = childNodes[anchorNodeIdx] || 0
+
+        if (anchorOffset) {
+          anchorOffset = anchorOffset.nodeValue.length
+
+          while (childNodes[anchorNodeIdx - 1]?.nodeType === 3) {
+            anchorNodeIdx -= 1
+            anchorOffset += childNodes[anchorNodeIdx].nodeValue.length
+          }
         }
       }
+
       if (childNodes[focusNodeIdx - 1]?.nodeType === 3) {
         focusNodeIdx -= 1
         focusOffset += childNodes[focusNodeIdx - 1].nodeValue.length
       } else if (focusNode === oEditor) {
         focusNodeIdx = focusOffset
-        focusOffset = childNodes[focusNodeIdx].nodeValue.length
-        while (childNodes[focusNodeIdx - 1]?.nodeType === 3) {
-          focusNodeIdx -= 1
-          focusOffset += childNodes[focusNodeIdx].nodeValue.length
+        focusOffset = childNodes[focusNodeIdx] || 0
+
+        if (focusOffset) {
+          focusOffset = focusOffset.nodeValue.length
+
+          while (childNodes[focusNodeIdx - 1]?.nodeType === 3) {
+            focusNodeIdx -= 1
+            focusOffset += childNodes[focusNodeIdx].nodeValue.length
+          }
         }
       }
 
