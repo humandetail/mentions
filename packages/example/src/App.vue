@@ -10,6 +10,8 @@
       :dropdownMaxHeight="200"
       :max-length="90"
       :options-fetch-api="fetchOptions"
+      prefix="#"
+      suffix="#"
       @change="value = $event"
     />
   </div>

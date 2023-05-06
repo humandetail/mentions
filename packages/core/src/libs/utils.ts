@@ -38,21 +38,21 @@ export const computePosition = (contrastElement: HTMLElement, targetElement: HTM
   }
 }
 
-export const createAtElement = () => {
+export const createAtElement = (prefix: string) => {
   const oAt = document.createElement('span')
   oAt.className = DOM_CLASSES.AT
-  oAt.textContent = '@'
+  oAt.textContent = prefix
   return oAt
 }
 
-export const createMentionElement = (name: string, id: string | number) => {
+export const createMentionElement = (name: string, id: string | number, prefix: string, suffix: string) => {
   const oM = document.createElement('em')
   oM.className = DOM_CLASSES.MENTION
   oM.setAttribute('data-id', `${id}`)
   oM.setAttribute('data-name', name)
   // @ts-ignore
   oM.setAttribute('contenteditable', false)
-  oM.innerText = `@${name} `
+  oM.innerText = `${prefix}${name}${suffix}`
   return oM
 }
 

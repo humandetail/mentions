@@ -42,6 +42,16 @@ export default {
       type: String
     },
 
+    prefix: {
+      type: String,
+      default: '@'
+    },
+
+    suffix: {
+      type: String,
+      default: ' '
+    },
+
     // value 最大长度限制
     // 注意，此长度可能和输入框中的实际上度不一致
     // 如：value = `#{name:张三,id:12345}你好`，长度为 21
@@ -140,7 +150,7 @@ export default {
     },
 
     handleBeforeInput (e) {
-      const { open, maxLength } = this
+      const { open, maxLength, prefix } = this
       const { target, data, inputType } = e
 
       const value = valueFormatter(target.innerHTML)
@@ -164,12 +174,12 @@ export default {
       }
 
       // 输入 `@` 符号时，展开 Mentions 列表
-      if (data === '@' && !this.dropdownVisible) {
+      if (data === prefix && !this.dropdownVisible) {
         e.preventDefault()
 
         const range = window.getSelection().getRangeAt(0)
 
-        const oAt = createAtElement()
+        const oAt = createAtElement(prefix)
 
         range.insertNode(oAt)
         setRangeAfterNode(oAt.firstChild)

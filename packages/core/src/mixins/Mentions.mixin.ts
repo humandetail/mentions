@@ -105,7 +105,9 @@ export default {
 
     appendMentionByIndex (index) {
       const {
-        currentOptions
+        currentOptions,
+        prefix,
+        suffix
       } = this
       const item = currentOptions[index]
 
@@ -115,7 +117,7 @@ export default {
       range.deleteContents()
 
       // 2. 插入 @Mention 内容块并让光标位置插入块之后
-      const oM = createMentionElement(item.label, item.value)
+      const oM = createMentionElement(item.label, item.value, prefix, suffix)
       insertNodeAfterRange(oM)
 
       // 3. 关闭 dropdown

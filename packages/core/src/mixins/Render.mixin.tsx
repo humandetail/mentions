@@ -30,6 +30,7 @@ export default {
     },
 
     renderContent (content) {
+      const { prefix, suffix } = this
       const oEditor = this.$refs.Editor
       if (!oEditor) {
         return
@@ -43,7 +44,7 @@ export default {
           return `${html}${item.split('\n').map((v, i) => (i !== 0 ? `<br />${v}` : v))}`
         }
 
-        return `${html}<em class="${DOM_CLASSES.MENTION}" data-id="${item.value}" data-name="${item.label}" contenteditable="false">@${item.label} </em>`
+        return `${html}<em class="${DOM_CLASSES.MENTION}" data-id="${item.value}" data-name="${item.label}" contenteditable="false">${prefix}${item.label}${suffix}</em>`
       }, '')
     }
   }
