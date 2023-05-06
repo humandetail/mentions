@@ -14,7 +14,8 @@ import { DOM_CLASSES } from './libs/config.ts'
 
 import {
   RenderMixin,
-  MentionsMixin
+  MentionsMixin,
+  OptionsMixin
 } from './mixins'
 
 export default {
@@ -22,7 +23,8 @@ export default {
 
   mixins: [
     RenderMixin,
-    MentionsMixin
+    MentionsMixin,
+    OptionsMixin
   ],
 
   props: {
@@ -40,34 +42,12 @@ export default {
       type: String
     },
 
-    options: {
-      type: Array,
-      default: () => []
-    },
-
-    labelFieldName: {
-      type: String,
-      default: 'label'
-    },
-
-    valueFieldName: {
-      type: String,
-      default: 'value'
-    },
-
-    filterOption: {
-      type: Function
-    },
-
+    // value 最大长度限制
+    // 注意，此长度可能和输入框中的实际上度不一致
+    // 如：value = `#{name:张三,id:12345}你好`，长度为 21
+    // 而在输入框里面的内容为 `@张三 你好`，长度为 6
+    // 这里需要开发人员自行对值的长度进行计算
     maxLength: {
-      type: Number
-    },
-
-    dropdownMaxWidth: {
-      type: Number
-    },
-
-    dropdownMaxHeight: {
       type: Number
     }
   },
@@ -89,29 +69,6 @@ export default {
         focusNodeIdx: -1,
         focusOffset: -1
       }
-    }
-  },
-
-  computed: {
-    localOptions () {
-      const { options, labelFieldName, valueFieldName } = this
-
-      return options.map(option => ({
-        label: option[labelFieldName],
-        value: option[valueFieldName]
-      }))
-    },
-
-    currentOptions () {
-      const { localOptions, filterValue, filterOption } = this
-      if (!filterValue) {
-        return localOptions
-      }
-
-      if (typeof filterOption === 'function') {
-        return localOptions.filter(option => filterOption(option, filterValue))
-      }
-      return localOptions.filter(option => option.label.toLowerCase().indexOf(filterValue.toLowerCase()) >= 0)
     }
   },
 
@@ -320,6 +277,7 @@ export default {
 
     async open () {
       this.dropdownVisible = true
+
       await this.$nextTick()
       this.$emit('open')
 
@@ -335,6 +293,7 @@ export default {
       const oDropdown = oRoot.querySelector(`.${DOM_CLASSES.DROPDOWN}`)
 
       const rect = computePosition(oContrast, oDropdown)
+
       Object.assign(oDropdown.style, {
         left: `${rect.x}px`,
         top: `${rect.y}px`,
@@ -343,6 +302,9 @@ export default {
         width: `${rect.availableWidth}px`,
         height: `${rect.availableHeight}px`
       })
+
+      // Keep the order of execution
+      this.fetchOriginOptions()
     },
 
     close () {
