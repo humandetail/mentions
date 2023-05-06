@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { DOM_CLASSES, MENTION_REG } from '../libs/config'
+import { DOM_CLASSES, MENTION_REG, integerValidator } from '../libs/config'
 import { createMentionElement, insertNodeAfterRange } from '../libs/utils'
 
 export default {
@@ -107,8 +107,11 @@ export default {
       const {
         currentOptions,
         prefix,
-        suffix
+        suffix,
+        value,
+        maxLength
       } = this
+
       const item = currentOptions[index]
 
       // 1. 清除输入内容
@@ -118,7 +121,11 @@ export default {
 
       // 2. 插入 @Mention 内容块并让光标位置插入块之后
       const oM = createMentionElement(item.label, item.value, prefix, suffix)
-      insertNodeAfterRange(oM)
+
+      if (!(integerValidator(maxLength) && value.length + (oM.innerText.length) > maxLength)) {
+        // 只允许在剩余长度足够的情况下插入 mention
+        insertNodeAfterRange(oM)
+      }
 
       // 3. 关闭 dropdown
       this.close()
