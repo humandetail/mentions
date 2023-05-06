@@ -56,11 +56,14 @@ export const createMentionElement = (name: string, id: string | number) => {
   return oM
 }
 
-export const insertNodeAfterRange = (node: Node) => {
-  const selection = window.getSelection()!
-  const range = selection.getRangeAt(0)
+export const insertNodeAfterRange = (node: Node, range?: Range, isClick?: boolean) => {
+  if (!range) {
+    range = window.getSelection()!.getRangeAt(0)
+  }
   range.insertNode(node)
-  setRangeAfterNode(node)
+  if (!isClick) {
+    setRangeAfterNode(node)
+  }
 }
 
 export const setRangeAfterNode = (node: Node) => {

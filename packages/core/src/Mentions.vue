@@ -115,7 +115,7 @@ export default {
 
     handleClick () {
       if (this.dropdownVisible) {
-        this.close()
+        this.close(true)
       }
     },
 
@@ -307,15 +307,31 @@ export default {
       this.fetchOriginOptions()
     },
 
-    close () {
+    close (isClick = false) {
       this.filterValue = undefined
       this.dropdownVisible = false
 
       const oContainer = this.$refs.Container
+      const oEditor = oContainer.querySelector(`.${DOM_CLASSES.INPUT}`)
       const oAt = oContainer.querySelector(`.${DOM_CLASSES.AT}`)
 
       if (oAt) {
         let text = oAt.textContent
+
+        // 需要取 range 的位置，防止在使用鼠标点击的时候，新的光标位置不正确
+        let range
+        if (isClick) {
+          range = new Range()
+          const idx = [].indexOf.call(oEditor.childNodes, oAt)
+          if (idx === 0) {
+            range.setStart(oEditor, 0)
+            range.setEnd(oEditor, 0)
+          } else {
+            range.setStartAfter(oEditor.childNodes[idx - 1])
+            range.setEndAfter(oEditor.childNodes[idx - 1])
+          }
+        }
+
         oAt.remove()
         if (text.length > 0) {
           const { maxLength, value } = this
@@ -324,7 +340,7 @@ export default {
             text = text.slice(maxLength - value.length)
           }
           // 插入文本内容
-          insertNodeAfterRange(document.createTextNode(text))
+          insertNodeAfterRange(document.createTextNode(text), range, isClick)
         }
       }
 
