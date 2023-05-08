@@ -393,7 +393,7 @@ export default {
       // 修正索引，在插入 textNode 时，有可能会导致多个 textNode 连续存在
       if (childNodes[anchorNodeIdx - 1]?.nodeType === 3) {
         anchorNodeIdx -= 1
-        anchorOffset += childNodes[anchorNodeIdx - 1].nodeValue.length
+        anchorOffset += childNodes[anchorNodeIdx].nodeValue.length
       } else if (anchorNode === oEditor) {
         anchorNodeIdx = anchorOffset
         anchorOffset = childNodes[anchorNodeIdx] || 0
@@ -410,7 +410,7 @@ export default {
 
       if (childNodes[focusNodeIdx - 1]?.nodeType === 3) {
         focusNodeIdx -= 1
-        focusOffset += childNodes[focusNodeIdx - 1].nodeValue.length
+        focusOffset += childNodes[focusNodeIdx].nodeValue.length
       } else if (focusNode === oEditor) {
         focusNodeIdx = focusOffset
         focusOffset = childNodes[focusNodeIdx] || 0

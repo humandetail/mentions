@@ -47,6 +47,7 @@ const fetchOptions = async () => {
   return new Promise(resolve => {
     setTimeout(() => {
       resolve([
+        { label: '所有人', value: 0, customRender: (option: any, index: number) => <div style="color: red">所有人</div> },
         { label: 'A Detail', value: 1 },
         { label: 'B libon', value: 2 },
         { label: 'C 张 三', value: 3 },

@@ -67,6 +67,7 @@ export default {
       const { optionsFetchApi, options, originOptions, labelFieldName, valueFieldName } = this
 
       return (typeof optionsFetchApi === 'function' ? originOptions : options).map(option => ({
+        ...option,
         label: option[labelFieldName],
         value: option[valueFieldName]
       }))
@@ -168,7 +169,7 @@ export default {
                 onMouseenter={ () => this.handleDropdownListOptionMouseenter(index) }
                 onMousedown={ e => this.handleDropdownListOptionMousedown(index, e) }
               >
-                { option.label }
+                { typeof option.customRender === 'function' ? option.customRender(option, index) : option.label }
               </li>
             ))
           }
