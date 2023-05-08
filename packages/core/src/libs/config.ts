@@ -48,3 +48,5 @@ export function integerValidator (value: number) {
 export const MENTION_REG = /^#{name:([\w\W]+?),id:([\w\W]+?)}/
 
 export const MENTION_DOM_REG = /<\s*em[^>]*class="[^"]*mention[^"]*"[^>]*data-id="([^"]*)"[^>]*data-name="([^"]*)"[^>]*>[\w\W]*?<\/\s*em\s*>/gi
+
+export const HTML_ENTITY_CHARACTER_REG = /&[A-z]+;/i

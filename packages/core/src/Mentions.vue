@@ -10,7 +10,7 @@ import {
   valueFormatter
 } from './libs/utils.ts'
 
-import { DOM_CLASSES, MENTION_REG } from './libs/config.ts'
+import { DOM_CLASSES, MENTION_REG, HTML_ENTITY_CHARACTER_REG } from './libs/config.ts'
 
 import {
   RenderMixin,
@@ -124,7 +124,6 @@ export default {
 
       let length = 0
       let atMatch
-      let htmlCharMatch
 
       while (val.length) {
         if ((atMatch = val.match(reg))) {
@@ -135,9 +134,9 @@ export default {
             })
             : `#{name:${atMatch[1]},id:${atMatch[2]}}`.length
           val = val.replace(reg, '')
-        } else if ((htmlCharMatch = val.match(/&[a-z]+;/i))) {
+        } else if (val.match(HTML_ENTITY_CHARACTER_REG)) {
           length++
-          val = val.slice(htmlCharMatch[0].length)
+          val = val.replace(HTML_ENTITY_CHARACTER_REG, '')
         } else {
           length++
           val = val.slice(1)
