@@ -1,13 +1,16 @@
 // @ts-nocheck
-import { DOM_CLASSES, MENTION_REG } from '../libs/config'
+import { MENTION_REG } from '../libs/config'
 
 export default {
   methods: {
     formatContent (val) {
+      const { formatter } = this
       const content = []
 
+      const reg = formatter?.pattern || MENTION_REG
+
       while (val.length) {
-        const match = val.match(MENTION_REG)
+        const match = val.match(reg)
         if (match) {
           const option = {
             label: match[1],
@@ -26,26 +29,22 @@ export default {
         }
       }
 
+      this.content = content
       return content
     },
 
-    renderContent (content) {
-      const { prefix, suffix } = this
-      const oEditor = this.$refs.Editor
-      if (!oEditor) {
-        return
+    renderMentionContent (id: string, name: string) {
+      const { prefix, suffix, formatter } = this
+
+      if (typeof formatter?.render === 'function') {
+        return formatter.render(id, name)
       }
 
-      oEditor.innerHTML = content.reduce((html, item) => {
-        if (typeof item === 'string') {
-          if (this.type === 'input') {
-            return `${html}${item}`
-          }
-          return `${html}${item.split('\n').map((v, i) => (i !== 0 ? `<br />${v}` : v))}`
-        }
+      if (typeof formatter?.render === 'object' && formatter.render.scopedSlot) {
+        return this.$slots[formatter.render.scopedSlot]({ id, name })
+      }
 
-        return `${html}<em class="${DOM_CLASSES.MENTION}" data-id="${item.value}" data-name="${item.label}" contenteditable="false">${prefix}${item.label}${suffix}</em>`
-      }, '')
+      return `${prefix}${name}${suffix}`
     }
   }
 }

@@ -94,7 +94,7 @@ export default {
           }
           this.currentInputValue = val
           this.$nextTick(() => {
-            this.renderContent(this.formatContent(val))
+            this.formatContent(val)
           })
         }
       }
@@ -153,7 +153,7 @@ export default {
       const { open, maxLength, prefix } = this
       const { target, data, inputType } = e
 
-      const value = valueFormatter(target.innerHTML)
+      const value = valueFormatter(target.innerHTML, this.formatter?.parser)
 
       if (!this.dropdownVisible) {
         this.recordState()
@@ -214,7 +214,7 @@ export default {
         return
       }
 
-      const value = valueFormatter(target.innerHTML)
+      const value = valueFormatter(target.innerHTML, this.formatter?.parser)
 
       if (integerValidator(maxLength) && value.length > maxLength) {
         const {
@@ -363,7 +363,9 @@ export default {
       if (!oEditor) {
         return
       }
-      const { childNodes, innerHTML } = oEditor
+      let { childNodes, innerHTML } = oEditor
+      // 过滤 childNodes 空行
+      childNodes = [...childNodes].filter(node => !(node.nodeType === 3 && node.nodeValue.length === 0))
 
       // 如果内容已经为空
       if (!innerHTML) {
@@ -433,7 +435,7 @@ export default {
     }
   },
 
-  render () {
+  render (h) {
     return (
       <div
         ref="Container"
@@ -450,7 +452,37 @@ export default {
           onClick={ this.handleClick }
           onScroll={ this.handleScroll }
           onMousedown={ this.handleMousedown }
-        ></div>
+        >
+          {
+            this.content.map(item => {
+              if (typeof item === 'string') {
+                if (this.type === 'input') {
+                  return item
+                }
+                return item.split('\n').map((v, i) => {
+                  if (i !== 0) {
+                    return (
+                      <>
+                        <br></br>
+                        { v }
+                      </>
+                    )
+                  }
+                  return v
+                })
+              }
+
+              return (
+                <em
+                  class={ DOM_CLASSES.MENTION }
+                  data-id={ item.value }
+                  data-name={ item.label }
+                  contenteditable={ false }
+                >{ this.renderMentionContent(item.value, item.label) }</em>
+              )
+            })
+          }
+        </div>
         <div>
           { this.dropdownVisible ? this.renderDropdown() : null }
         </div>

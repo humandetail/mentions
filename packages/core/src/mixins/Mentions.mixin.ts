@@ -3,6 +3,19 @@ import { DOM_CLASSES, MENTION_REG, integerValidator } from '../libs/config'
 import { createMentionElement, insertNodeAfterRange } from '../libs/utils'
 
 export default {
+  props: {
+    formatter: {
+      type: Object,
+      validator (val) {
+        return (
+          'pattern' in val &&
+          'render' in val &&
+          'parser' in val
+        )
+      }
+    }
+  },
+
   data () {
     return {
       // 当前匹配到的所有 Mentions

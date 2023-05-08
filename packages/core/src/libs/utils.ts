@@ -88,15 +88,22 @@ export const isNodeAfterNode = (node1: Node, node2: Node) => {
  * 判断元素是否为 Mention 元素
  */
 export const isMention = (node: Element) => {
-  return node.nodeType === 1 && node.classList.contains(DOM_CLASSES.MENTION)
+  return [...(document.querySelectorAll(`.${DOM_CLASSES.MENTION}`) as any)].some(m => m.contains(node))
 }
 
 export function integerValidator (value: number) {
   return !Number.isNaN(value) && value >= 0
 }
 
-export const valueFormatter = (innerHTML: string = '') => {
+export const valueFormatter = (innerHTML: string = '', parser?: (id: string, name: string) => string) => {
   const oDiv = document.createElement('div')
-  oDiv.innerHTML = innerHTML.replace(MENTION_DOM_REG, (_, $id, $name) => `#{name:${$name},id:${$id}}`)
+  oDiv.innerHTML = innerHTML.replace(
+    MENTION_DOM_REG,
+    (_, $id, $name) => {
+      return typeof parser === 'function'
+        ? parser($id, $name)
+        : `#{name:${$name},id:${$id}}`
+    }
+  )
   return oDiv.innerText
 }

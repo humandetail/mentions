@@ -12,12 +12,15 @@
       :options-fetch-api="fetchOptions"
       prefix="#"
       suffix="#"
+      :formatter="formatter"
       @change="value = $event"
-    />
+    >
+      <template v-slot:mention="{ id, name }">🚀--{{ id }} -- {{ name }}</template>
+    </VueMentions>
   </div>
 </template>
 
-<script setup lang="ts">
+<script setup lang="tsx">
 // import { onMounted } from 'vue'
 
 import { ref } from 'vue'
@@ -37,7 +40,7 @@ const options = [
 ]
 
 const value = ref(
-  '你好#{name:张三,id:3},这里是#{name:Detail,id:1}和#{name:libon,id:2}，#{name:张三,id:3}Hello wor\nld！'
+  '你好<name:张三,id:3>,这里是<name:Detail,id:1>和<name:libon,id:2>，<name:张三,id:3>Hello wor\nld！'
 )
 
 const fetchOptions = async () => {
@@ -56,5 +59,14 @@ const fetchOptions = async () => {
       ])
     }, 2000)
   })
+}
+
+const formatter = {
+  pattern: /^<name:([\w\W]+?),id:([\w\W]+?)>/,
+  // render (id: string, name: string) {
+  //   return <div contenteditable="false">{`${id} - ${name}`}</div>
+  // }
+  render: { scopedSlot: 'mention' },
+  parser: (id: string, name: string) => `&lt;name:${name},id:${id}&gt;`
 }
 </script>
