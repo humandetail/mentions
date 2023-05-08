@@ -18,7 +18,7 @@ export default {
           }
           content.push(option)
           this.currentMentions.push(option)
-          val = val.slice(match[0].length)
+          val = val.replace(reg, '')
         } else {
           const lastVal = typeof content.at(-1) === 'string'
             ? content.pop()

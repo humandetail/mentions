@@ -13,6 +13,8 @@
       prefix="#"
       suffix="#"
       :formatter="formatter"
+      :get-mention-length="getMentionLength"
+      :show-statistics="showStatistics"
       @change="value = $event"
     >
       <template v-slot:mention="{ id, name }">🚀--{{ id }} -- {{ name }}</template>
@@ -40,7 +42,7 @@ const options = [
 ]
 
 const value = ref(
-  '你好<name:张三,id:3>,这里是<name:Detail,id:1>和<name:libon,id:2>，<name:张三,id:3>Hello wor\nld！'
+  '你好<name:张三,id:3>,这里是<name:Detail,id:1>和<name:libon,id:2>，<name:张三,id:3>Hello wor\nld！112312323123'
 )
 
 const fetchOptions = async () => {
@@ -63,11 +65,20 @@ const fetchOptions = async () => {
 }
 
 const formatter = {
-  pattern: /^<name:([\w\W]+?),id:([\w\W]+?)>/,
-  // render (id: string, name: string) {
-  //   return <div contenteditable="false">{`${id} - ${name}`}</div>
-  // }
-  render: { scopedSlot: 'mention' },
+  pattern: /^(?:<|&lt;)name:([\w\W]+?),id:([\w\W]+?)(?:>|&gt;)/,
+  render (id: string, name: string) {
+    return <div contenteditable="false">{`${id} - ${name}`}</div>
+  },
+  // render: { scopedSlot: 'mention' },
   parser: (id: string, name: string) => `&lt;name:${name},id:${id}&gt;`
+}
+
+const getMentionLength = (mentionOption: { label: string, value: string }) => {
+  // return `@${mentionOption.label} `.length
+  return `<name:${mentionOption.label},id:${mentionOption.value}>`.length
+}
+
+const showStatistics = (currentLength: number, maxLength: number, currentMentions: any) => {
+  return `${currentLength} / ${maxLength}`
 }
 </script>

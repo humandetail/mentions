@@ -10,7 +10,7 @@ import {
   valueFormatter
 } from './libs/utils.ts'
 
-import { DOM_CLASSES } from './libs/config.ts'
+import { DOM_CLASSES, MENTION_REG } from './libs/config.ts'
 
 import {
   RenderMixin,
@@ -59,6 +59,15 @@ export default {
     // 这里需要开发人员自行对值的长度进行计算
     maxLength: {
       type: Number
+    },
+
+    // 获取 mention 的长度
+    getMentionLength: {
+      type: Function
+    },
+
+    showStatistics: {
+      type: Function
     }
   },
 
@@ -82,6 +91,12 @@ export default {
     }
   },
 
+  computed: {
+    valueLength () {
+      return this.getValueLength(this.value)
+    }
+  },
+
   watch: {
     currentValue: {
       deep: true,
@@ -89,8 +104,9 @@ export default {
       handler (val) {
         const { maxLength } = this
         if (val && val !== this.currentInputValue) {
-          if (maxLength && val.length > maxLength) {
+          if (integerValidator(maxLength) && this.getValueLength(val) > maxLength) {
             val = val.slice(0, maxLength)
+            this.$emit('change', val)
           }
           this.currentInputValue = val
           this.$nextTick(() => {
@@ -102,6 +118,31 @@ export default {
   },
 
   methods: {
+    getValueLength (val) {
+      const { formatter, getMentionLength } = this
+      const reg = formatter?.pattern || MENTION_REG
+
+      let length = 0
+
+      while (val.length) {
+        const match = val.match(reg)
+        if (match) {
+          length += typeof getMentionLength === 'function'
+            ? getMentionLength({
+              label: match[1],
+              value: match[2]
+            })
+            : `#{name:${match[1]},id:${match[2]}}`.length
+          val = val.replace(reg, '')
+        } else {
+          length++
+          val = val.slice(1)
+        }
+      }
+
+      return length
+    },
+
     handleKeydown (e) {
       const { key } = e
 
@@ -117,8 +158,11 @@ export default {
           this.appendMentionByIndex(this.activeOptionIdx)
         }
       } else {
-        if (key === 'Enter' && this.type === 'input') {
+        if (key === 'Enter') {
           e.preventDefault()
+          if (this.type === 'textarea') {
+            document.execCommand('insertHTML', false, '<br>')
+          }
         }
       }
     },
@@ -159,7 +203,7 @@ export default {
         this.recordState()
       }
 
-      if (integerValidator(maxLength) && value.length + 1 > maxLength) {
+      if (integerValidator(maxLength) && this.getValueLength(value) + 1 > maxLength) {
         return
       }
 
@@ -216,7 +260,7 @@ export default {
 
       const value = valueFormatter(target.innerHTML, this.formatter?.parser)
 
-      if (integerValidator(maxLength) && value.length > maxLength) {
+      if (integerValidator(maxLength) && this.getValueLength(value) > maxLength) {
         const {
           innerHTML,
           anchorNodeIdx,
@@ -344,10 +388,10 @@ export default {
 
         oAt.remove()
         if (text.length > 0) {
-          const { maxLength, value } = this
+          const { maxLength, valueLength } = this
           // 对内容进行截取
-          if (integerValidator(maxLength) && value.length + text.length > maxLength) {
-            text = text.slice(maxLength - value.length)
+          if (integerValidator(maxLength) && valueLength + text.length > maxLength) {
+            text = text.slice(maxLength - valueLength)
           }
           // 插入文本内容
           insertNodeAfterRange(document.createTextNode(text), range, isClick)
@@ -483,6 +527,11 @@ export default {
             })
           }
         </div>
+
+        <div class="">
+          { typeof this.showStatistics === 'function' ? this.showStatistics(this.valueLength, this.maxLength, this.currentMentions) : null }
+        </div>
+
         <div>
           { this.dropdownVisible ? this.renderDropdown() : null }
         </div>

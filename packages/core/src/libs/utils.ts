@@ -96,14 +96,15 @@ export function integerValidator (value: number) {
 }
 
 export const valueFormatter = (innerHTML: string = '', parser?: (id: string, name: string) => string) => {
-  const oDiv = document.createElement('div')
-  oDiv.innerHTML = innerHTML.replace(
-    MENTION_DOM_REG,
-    (_, $id, $name) => {
-      return typeof parser === 'function'
-        ? parser($id, $name)
-        : `#{name:${$name},id:${$id}}`
-    }
-  )
-  return oDiv.innerText
+  return innerHTML
+    .replace(
+      MENTION_DOM_REG,
+      (_, $id, $name) => {
+        return typeof parser === 'function'
+          ? parser($id, $name)
+          : `#{name:${$name},id:${$id}}`
+      }
+    ) // 解析 mention 块
+    .replace(/(<((?:p|div|br))[^>]*>)/ig, '\n$1') // 块级标签增加\n
+    .replace(/<[^>]*>/g, '') // 移除剩余所有标签
 }

@@ -145,12 +145,14 @@ export default {
     },
 
     getMentionsByValueChange () {
-      let { currentInputValue: val } = this
+      let { currentInputValue: val, formatter } = this
       let match
+
+      const reg = formatter?.pattern || MENTION_REG
 
       const currentMentions = []
       while (val?.length) {
-        match = val.match(MENTION_REG)
+        match = val.match(reg)
         if (!match) {
           val = val.slice(1)
         } else {
@@ -158,7 +160,7 @@ export default {
             label: match[1],
             value: match[2]
           })
-          val = val.slice(match[0].length)
+          val = val.replace(reg, '')
         }
       }
       this.currentMentions = currentMentions
