@@ -123,17 +123,21 @@ export default {
       const reg = formatter?.pattern || MENTION_REG
 
       let length = 0
+      let atMatch
+      let htmlCharMatch
 
       while (val.length) {
-        const match = val.match(reg)
-        if (match) {
+        if ((atMatch = val.match(reg))) {
           length += typeof getMentionLength === 'function'
             ? getMentionLength({
-              label: match[1],
-              value: match[2]
+              label: atMatch[1],
+              value: atMatch[2]
             })
-            : `#{name:${match[1]},id:${match[2]}}`.length
+            : `#{name:${atMatch[1]},id:${atMatch[2]}}`.length
           val = val.replace(reg, '')
+        } else if ((htmlCharMatch = val.match(/&[a-z]+;/i))) {
+          length++
+          val = val.slice(htmlCharMatch[0].length)
         } else {
           length++
           val = val.slice(1)
