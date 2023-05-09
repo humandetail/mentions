@@ -10,7 +10,7 @@ import {
   valueFormatter
 } from './libs/utils.ts'
 
-import { DOM_CLASSES, MENTION_REG } from './libs/config.ts'
+import { DOM_CLASSES, MENTION_REG, HTML_ENTITY_CHARACTER_REG } from './libs/config.ts'
 
 import {
   RenderMixin,
@@ -123,17 +123,20 @@ export default {
       const reg = formatter?.pattern || MENTION_REG
 
       let length = 0
+      let atMatch
 
       while (val.length) {
-        const match = val.match(reg)
-        if (match) {
+        if ((atMatch = val.match(reg))) {
           length += typeof getMentionLength === 'function'
             ? getMentionLength({
-              label: match[1],
-              value: match[2]
+              label: atMatch[1],
+              value: atMatch[2]
             })
-            : `#{name:${match[1]},id:${match[2]}}`.length
+            : `#{name:${atMatch[1]},id:${atMatch[2]}}`.length
           val = val.replace(reg, '')
+        } else if (val.match(HTML_ENTITY_CHARACTER_REG)) {
+          length++
+          val = val.replace(HTML_ENTITY_CHARACTER_REG, '')
         } else {
           length++
           val = val.slice(1)
