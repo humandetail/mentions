@@ -115,7 +115,7 @@ export default {
         // 去除空行
         this.$nextTick(() => {
           // eslint-disable-next-line no-self-assign
-          this.$refs.Editor.innerHTML = this.$refs.Editor.innerHTML
+          this.$refs.Editor.innerHTML = this.$refs.Editor.innerHTML.replace(/\n/g, '<br/>')
         })
       }
     }
@@ -163,7 +163,23 @@ export default {
         if (key === 'Enter') {
           e.preventDefault()
           if (this.type === 'textarea') {
-            document.execCommand('insertHTML', false, '<br>')
+            const selection = window.getSelection()
+            if (selection.focusNode.nextSibling) {
+              document.execCommand('insertHTML', false, '<br/>')
+              return
+            }
+
+            const range = selection.getRangeAt(0)
+            range.deleteContents()
+            const br = document.createElement('br')
+            range.insertNode(br)
+
+            // 将光标移到 br 标签的下一行
+            range.setStartAfter(br)
+            range.setEndAfter(br)
+            selection.removeAllRanges()
+            selection.addRange(range)
+            range.insertNode(document.createElement('br'))
           }
         }
       }
@@ -392,20 +408,7 @@ export default {
           {
             content.map(item => {
               if (typeof item === 'string') {
-                if (type === 'input') {
-                  return item
-                }
-                return item.split('\n').map((v, i) => {
-                  if (i !== 0) {
-                    return (
-                      <>
-                        <br></br>
-                        { v }
-                      </>
-                    )
-                  }
-                  return v
-                })
+                return item
               }
 
               return (

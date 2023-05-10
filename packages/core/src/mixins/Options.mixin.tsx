@@ -133,7 +133,6 @@ export default {
       return (
         <div class={ DOM_CLASSES.DROPDOWN_EMPTY }>
           { this.renderDropdownEmptyGraph() }
-          <p>暂无数据</p>
         </div>
       )
     },
