@@ -72,15 +72,18 @@ export default {
         const { intersectionRatio } = entries[0]
 
         const oList = this.$refs.Container.querySelector(`.${DOM_CLASSES.DROPDOWN_LIST}`)
-        const oActive = oList.querySelector(`.${DOM_CLASSES.DROPDOWN_LIST_OPTION}.${DOM_CLASSES.DROPDOWN_LIST_OPTION_ACTIVE}`)
-        this.intersectionObserver.unobserve(oActive)
-        if (intersectionRatio === 1) {
-          return
-        }
 
         if (!oList) {
           return
         }
+
+        const oActive = oList.querySelector(`.${DOM_CLASSES.DROPDOWN_LIST_OPTION}.${DOM_CLASSES.DROPDOWN_LIST_OPTION_ACTIVE}`)
+        this.intersectionObserver.unobserve(oActive)
+
+        if (intersectionRatio === 1) {
+          return
+        }
+
         const { activeOptionIdx } = this
         const optionHeight = oActive.getBoundingClientRect().height
         const paddingTop = parseInt(window.getComputedStyle(oList).paddingTop)
