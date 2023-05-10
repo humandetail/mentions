@@ -1,3 +1,4 @@
+import { MentionOption } from '../../types/common'
 import { DOM_CLASSES, MENTION_DOM_REG } from './config'
 
 export const computePosition = (contrastElement: HTMLElement, targetElement: HTMLElement) => {
@@ -107,4 +108,12 @@ export const valueFormatter = (innerHTML: string = '', parser?: (id: string, nam
     ) // 解析 mention 块
     .replace(/(<((?:p|div|br))[^>]*>)/ig, '\n$1') // 块级标签增加\n
     .replace(/<[^>]*>/g, '') // 移除剩余所有标签
+}
+
+export const isEmptyTextNode = (node: Node) => node.nodeType === 3 && !node.nodeValue?.length
+
+export const computeMentionLength = (mention: MentionOption, calculator?: (m: MentionOption) => number) => {
+  return typeof calculator === 'function'
+    ? calculator(mention)
+    : `#{name:${mention.label},id:${mention.value}}`.length
 }

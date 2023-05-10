@@ -2,12 +2,12 @@
 import {
   computePosition,
   createAtElement,
-  insertNodeAfterRange,
   integerValidator,
   isMention,
   isNodeAfterNode,
   setRangeAfterNode,
-  valueFormatter
+  valueFormatter,
+  computeMentionLength
 } from './libs/utils.ts'
 
 import { DOM_CLASSES, MENTION_REG, HTML_ENTITY_CHARACTER_REG } from './libs/config.ts'
@@ -78,16 +78,7 @@ export default {
         : this.value,
 
       currentInputValue: undefined,
-      content: [],
-
-      // 记录选区及当前内容
-      state: {
-        innerHTML: '',
-        anchorNodeIdx: -1,
-        anchorOffset: -1,
-        focusNodeIdx: -1,
-        focusOffset: -1
-      }
+      content: []
     }
   },
 
@@ -114,6 +105,16 @@ export default {
           })
         }
       }
+    },
+    content: {
+      deep: true,
+      handler () {
+        // 去除空行
+        this.$nextTick(() => {
+          // eslint-disable-next-line no-self-assign
+          this.$refs.Editor.innerHTML = this.$refs.Editor.innerHTML
+        })
+      }
     }
   },
 
@@ -127,12 +128,7 @@ export default {
 
       while (val.length) {
         if ((atMatch = val.match(reg))) {
-          length += typeof getMentionLength === 'function'
-            ? getMentionLength({
-              label: atMatch[1],
-              value: atMatch[2]
-            })
-            : `#{name:${atMatch[1]},id:${atMatch[2]}}`.length
+          length += computeMentionLength({ label: atMatch[1], value: atMatch[2] }, getMentionLength)
           val = val.replace(reg, '')
         } else if (val.match(HTML_ENTITY_CHARACTER_REG)) {
           length++
@@ -172,7 +168,7 @@ export default {
 
     handleClick () {
       if (this.dropdownVisible) {
-        this.close(true)
+        this.close()
       }
     },
 
@@ -201,12 +197,13 @@ export default {
       const { target, data, inputType } = e
 
       const value = valueFormatter(target.innerHTML, this.formatter?.parser)
+      const valueLength = this.getValueLength(value)
 
       if (!this.dropdownVisible) {
         this.recordState()
       }
 
-      if (integerValidator(maxLength) && this.getValueLength(value) + 1 > maxLength) {
+      if (integerValidator(maxLength) && valueLength + 1 > maxLength) {
         return
       }
 
@@ -237,7 +234,7 @@ export default {
 
     async handleInput (e) {
       const { data, inputType, target } = e
-      const { filterValue, dropdownVisible, maxLength, state } = this
+      const { filterValue, dropdownVisible, maxLength } = this
 
       // 当 Mentions 列表被展开时，后续输入所有字符都当成过滤字符
       if (dropdownVisible) {
@@ -263,30 +260,9 @@ export default {
 
       const value = valueFormatter(target.innerHTML, this.formatter?.parser)
 
+      // restore state
       if (integerValidator(maxLength) && this.getValueLength(value) > maxLength) {
-        const {
-          innerHTML,
-          anchorNodeIdx,
-          anchorOffset,
-          focusNodeIdx,
-          focusOffset
-        } = state
-        target.innerHTML = innerHTML
-        const selection = window.getSelection()
-
-        let anchorNode = target.childNodes[anchorNodeIdx]
-        if (anchorNode?.nodeType !== 3) {
-          anchorNode = target
-        }
-        let focusNode = target.childNodes[focusNodeIdx]
-        if (focusNode?.nodeType !== 3) {
-          focusNode = target
-        }
-        const range = new Range()
-        range.setStart(anchorNode, anchorOffset)
-        range.setEnd(focusNode, focusOffset)
-        selection.removeAllRanges()
-        selection.addRange(range)
+        this.restoreState(target)
         return
       }
 
@@ -364,7 +340,7 @@ export default {
       this.fetchOriginOptions()
     },
 
-    close (isClick = false) {
+    close () {
       this.filterValue = undefined
       this.dropdownVisible = false
 
@@ -373,116 +349,14 @@ export default {
       const oAt = oContainer.querySelector(`.${DOM_CLASSES.AT}`)
 
       if (oAt) {
-        let text = oAt.textContent
-
-        // 需要取 range 的位置，防止在使用鼠标点击的时候，新的光标位置不正确
-        let range
-        if (isClick) {
-          range = new Range()
-          const idx = [].indexOf.call(oEditor.childNodes, oAt)
-          if (idx === 0) {
-            range.setStart(oEditor, 0)
-            range.setEnd(oEditor, 0)
-          } else {
-            range.setStartAfter(oEditor.childNodes[idx - 1])
-            range.setEndAfter(oEditor.childNodes[idx - 1])
-          }
-        }
-
-        oAt.remove()
-        if (text.length > 0) {
-          const { maxLength, valueLength } = this
-          // 对内容进行截取
-          if (integerValidator(maxLength) && valueLength + text.length > maxLength) {
-            text = text.slice(maxLength - valueLength)
-          }
-          // 插入文本内容
-          insertNodeAfterRange(document.createTextNode(text), range, isClick)
-        }
+        this.renderFailureAt(oAt, oEditor)
       }
 
       this.$emit('close')
-    },
-
-    // 记录 state
-    recordState () {
-      const oEditor = this.$refs.Editor
-      if (!oEditor) {
-        return
-      }
-      let { childNodes, innerHTML } = oEditor
-      // 过滤 childNodes 空行
-      childNodes = [...childNodes].filter(node => !(node.nodeType === 3 && node.nodeValue.length === 0))
-
-      // 如果内容已经为空
-      if (!innerHTML) {
-        Object.assign(this.state, {
-          innerHTML: '',
-          anchorNodeIdx: 0,
-          anchorOffset: 0,
-          focusNodeIdx: 0,
-          focusOffset: 0
-        })
-
-        return
-      }
-
-      let {
-        anchorNode,
-        anchorOffset,
-        focusNode,
-        focusOffset
-      } = window.getSelection()
-
-      let anchorNodeIdx = [].indexOf.call(childNodes, anchorNode)
-      let focusNodeIdx = [].indexOf.call(childNodes, focusNode)
-
-      // 修正索引，在插入 textNode 时，有可能会导致多个 textNode 连续存在
-      if (childNodes[anchorNodeIdx - 1]?.nodeType === 3) {
-        anchorNodeIdx -= 1
-        anchorOffset += childNodes[anchorNodeIdx].nodeValue.length
-      } else if (anchorNode === oEditor) {
-        anchorNodeIdx = anchorOffset
-        anchorOffset = childNodes[anchorNodeIdx] || 0
-
-        if (anchorOffset) {
-          anchorOffset = anchorOffset.nodeValue.length
-
-          while (childNodes[anchorNodeIdx - 1]?.nodeType === 3) {
-            anchorNodeIdx -= 1
-            anchorOffset += childNodes[anchorNodeIdx].nodeValue.length
-          }
-        }
-      }
-
-      if (childNodes[focusNodeIdx - 1]?.nodeType === 3) {
-        focusNodeIdx -= 1
-        focusOffset += childNodes[focusNodeIdx].nodeValue.length
-      } else if (focusNode === oEditor) {
-        focusNodeIdx = focusOffset
-        focusOffset = childNodes[focusNodeIdx] || 0
-
-        if (focusOffset) {
-          focusOffset = focusOffset.nodeValue.length
-
-          while (childNodes[focusNodeIdx - 1]?.nodeType === 3) {
-            focusNodeIdx -= 1
-            focusOffset += childNodes[focusNodeIdx].nodeValue.length
-          }
-        }
-      }
-
-      Object.assign(this.state, {
-        anchorNodeIdx,
-        focusNodeIdx,
-        anchorOffset,
-        focusOffset,
-        innerHTML
-      })
     }
   },
 
-  render (h) {
+  render () {
     return (
       <div
         ref="Container"

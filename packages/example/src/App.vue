@@ -10,8 +10,8 @@
       :dropdownMaxHeight="200"
       :max-length="90"
       :options-fetch-api="fetchOptions"
-      prefix="#"
-      suffix="#"
+      prefix="@"
+      suffix=" "
       :formatter="formatter"
       :get-mention-length="getMentionLength"
       :show-statistics="showStatistics"
@@ -42,7 +42,7 @@ const options = [
 ]
 
 const value = ref(
-  '你好<name:张三,id:3>,这里是<name:Detail,id:1>和<name:libon,id:2>，<name:张三,id:3>Hello wor\nld！112312323123'
+  '你好<name:张三,id:3>,这里是<name:Detail,id:1>和<name:libon,id:2>，Hello wor\nld！'
 )
 
 const fetchOptions = async () => {

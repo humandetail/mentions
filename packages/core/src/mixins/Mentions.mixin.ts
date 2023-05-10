@@ -1,6 +1,16 @@
 // @ts-nocheck
-import { DOM_CLASSES, MENTION_REG, integerValidator } from '../libs/config'
-import { createMentionElement, insertNodeAfterRange } from '../libs/utils'
+import {
+  DOM_CLASSES,
+  MENTION_REG,
+  integerValidator
+} from '../libs/config'
+
+import {
+  createMentionElement,
+  insertNodeAfterRange,
+  valueFormatter,
+  computeMentionLength
+} from '../libs/utils'
 
 export default {
   props: {
@@ -135,13 +145,19 @@ export default {
       // 2. 插入 @Mention 内容块并让光标位置插入块之后
       const oM = createMentionElement(item.label, item.value, prefix, suffix)
 
-      if (!(integerValidator(maxLength) && value.length + (oM.innerText.length) > maxLength)) {
+      if (!(integerValidator(maxLength) && this.getValueLength(value) + computeMentionLength(item, this.getMentionLength) > maxLength)) {
         // 只允许在剩余长度足够的情况下插入 mention
         insertNodeAfterRange(oM)
       }
 
       // 3. 关闭 dropdown
       this.close()
+
+      // 4. 记录新的内容
+      const newValue = valueFormatter(this.$refs.Editor.innerHTML, this.formatter?.parser)
+      this.currentInputValue = newValue
+      this.getMentionsByValueChange()
+      this.$emit('change', newValue)
     },
 
     getMentionsByValueChange () {
