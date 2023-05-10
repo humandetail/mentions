@@ -162,9 +162,9 @@ export default {
             currentOptions.map((option, index) => (
               <li
                 class={ `${DOM_CLASSES.DROPDOWN_LIST_OPTION} ${activeOptionIdx === index
-                    ? 'active'
+                    ? DOM_CLASSES.DROPDOWN_LIST_OPTION_ACTIVE
                     : ''
-                  }` }
+                  } ${option.disabled ? DOM_CLASSES.DROPDOWN_LIST_OPTION_DISABLED : ''}` }
                 data-value={ option.value }
                 onMouseenter={ () => this.handleDropdownListOptionMouseenter(index) }
                 onMousedown={ e => this.handleDropdownListOptionMousedown(index, e) }

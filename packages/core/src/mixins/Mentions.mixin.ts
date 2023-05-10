@@ -45,7 +45,7 @@ export default {
       const { dropdownVisible, intersectionObserver } = this
       if (dropdownVisible && intersectionObserver) {
         this.$nextTick(() => {
-          intersectionObserver.observe(document.querySelector(`.${DOM_CLASSES.DROPDOWN_LIST_OPTION}.active`))
+          intersectionObserver.observe(document.querySelector(`.${DOM_CLASSES.DROPDOWN_LIST_OPTION}.${DOM_CLASSES.DROPDOWN_LIST_OPTION_ACTIVE}`))
         })
       }
       this.$emit('active-option-change', this.localOptions[idx])
@@ -72,7 +72,7 @@ export default {
         const { intersectionRatio } = entries[0]
 
         const oList = this.$refs.Container.querySelector(`.${DOM_CLASSES.DROPDOWN_LIST}`)
-        const oActive = oList.querySelector(`.${DOM_CLASSES.DROPDOWN_LIST_OPTION}.active`)
+        const oActive = oList.querySelector(`.${DOM_CLASSES.DROPDOWN_LIST_OPTION}.${DOM_CLASSES.DROPDOWN_LIST_OPTION_ACTIVE}`)
         this.intersectionObserver.unobserve(oActive)
         if (intersectionRatio === 1) {
           return
@@ -142,12 +142,16 @@ export default {
       range.selectNode(this.$refs.Container.querySelector(`.${DOM_CLASSES.AT}`))
       range.deleteContents()
 
-      // 2. 插入 @Mention 内容块并让光标位置插入块之后
-      const oM = createMentionElement(item.label, item.value, prefix, suffix)
+      const oActiveMention = this.$refs.Container.querySelector(`.${DOM_CLASSES.DROPDOWN_LIST_OPTION_ACTIVE}`)
 
-      if (!(integerValidator(maxLength) && this.getValueLength(value) + computeMentionLength(item, this.getMentionLength) > maxLength)) {
-        // 只允许在剩余长度足够的情况下插入 mention
-        insertNodeAfterRange(oM)
+      if (!oActiveMention.classList.contains(DOM_CLASSES.DROPDOWN_LIST_OPTION_DISABLED)) {
+        // 2. 插入 @Mention 内容块并让光标位置插入块之后
+        const oM = createMentionElement(item.label, item.value, prefix, suffix)
+
+        if (!(integerValidator(maxLength) && this.getValueLength(value) + computeMentionLength(item, this.getMentionLength) > maxLength)) {
+          // 只允许在剩余长度足够的情况下插入 mention
+          insertNodeAfterRange(oM)
+        }
       }
 
       // 3. 关闭 dropdown

@@ -42,6 +42,9 @@ export default {
       type: String
     },
 
+    disabled: Boolean,
+    readonly: Boolean,
+
     prefix: {
       type: String,
       default: '@'
@@ -357,6 +360,14 @@ export default {
   },
 
   render () {
+    const {
+      disabled,
+      readonly,
+      type,
+      content,
+      dropdownVisible
+    } = this
+
     return (
       <div
         ref="Container"
@@ -364,20 +375,24 @@ export default {
       >
         <div
           ref="Editor"
-          class={ DOM_CLASSES.INPUT }
-          contenteditable
-          data-type={ this.type }
+          class={ `${DOM_CLASSES.INPUT}${disabled ? ' ' + DOM_CLASSES.DISABLED : ''}${readonly ? ' ' + DOM_CLASSES.READONLY : ''}` }
+          contenteditable={ !disabled && !readonly }
+          disabled={ !!disabled }
+          readonly={ !!readonly }
+          data-type={ type }
           onKeydown={ this.handleKeydown }
           onBeforeinput={ this.handleBeforeInput }
           onInput={ this.handleInput }
           onClick={ this.handleClick }
           onScroll={ this.handleScroll }
           onMousedown={ this.handleMousedown }
+          onFocus={ e => e.target.classList.add(DOM_CLASSES.FOCUSED) }
+          onBlur={ e => e.target.classList.remove(DOM_CLASSES.FOCUSED) }
         >
           {
-            this.content.map(item => {
+            content.map(item => {
               if (typeof item === 'string') {
-                if (this.type === 'input') {
+                if (type === 'input') {
                   return item
                 }
                 return item.split('\n').map((v, i) => {
@@ -410,7 +425,7 @@ export default {
         </div>
 
         <div>
-          { this.dropdownVisible ? this.renderDropdown() : null }
+          { dropdownVisible ? this.renderDropdown() : null }
         </div>
       </div>
     )

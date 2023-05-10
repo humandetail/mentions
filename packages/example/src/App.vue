@@ -11,6 +11,8 @@
       :max-length="90"
       prefix="@"
       suffix=" "
+      :disabled="false"
+      :readonly="false"
       :formatter="formatter"
       :get-mention-length="getMentionLength"
       :show-statistics="showStatistics"
@@ -32,7 +34,7 @@ const options = [
   { label: 'Detail', value: 1 },
   { label: 'libon', value: 2 },
   { label: '张 三', value: 3 },
-  { label: '李 四', value: 4 },
+  { label: '李 四', value: 4, disabled: true },
   { label: '王 五', value: 5 },
   { label: '赵 六', value: 6 },
   { label: '田 七', value: 7 },

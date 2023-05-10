@@ -3,6 +3,8 @@ import type { VNode } from 'vue'
 export interface MentionOption extends Record<string, any> {
   label: string
   value: string
+  disabled?: boolean
+  customRender?: (option: MentionOption, index: number) => VNode
 }
 
 export interface Formatter {
@@ -15,6 +17,8 @@ export interface ComponentProps {
   type?: 'input' | 'textarea'
   value?: string
   initialValue?: string
+  disabled?: boolean
+  readonly?: boolean
   prefix?: string
   suffix?: string
   maxLength?: number

@@ -9,10 +9,15 @@ export const DOM_CLASSES = (() => {
     'dropdown',
     'dropdown-list',
     'dropdown-list-option',
+    'dropdown-list-option-active',
+    'dropdown-list-option-disabled',
     'dropdown-arrow',
     'dropdown-empty',
     'dropdown-loading',
-    'dropdown-loading-spin'
+    'dropdown-loading-spin',
+    'focused',
+    'disabled',
+    'readonly'
   ]
   return arr.reduce((obj: Record<string, string>, item: string) => {
     return {
