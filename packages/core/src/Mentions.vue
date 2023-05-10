@@ -214,7 +214,7 @@ export default {
       if (
         this.dropdownVisible &&
         inputType === 'deleteContentForward' &&
-        !window.getSelection().getRangeAt(0).startOffset - 1 === (this.filterValue?.length || 0)
+        !window.getSelection().getRangeAt(0).startOffset - 1 === (this.filterValue?.length ?? 0)
       ) {
         e.preventDefault()
         return
@@ -263,6 +263,7 @@ export default {
 
       const value = valueFormatter(target.innerHTML, this.formatter?.parser)
 
+      // 输入达到最大值的时候还原输入框的值
       if (integerValidator(maxLength) && this.getValueLength(value) > maxLength) {
         const {
           innerHTML,
