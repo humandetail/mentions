@@ -337,7 +337,7 @@ export default {
       })
 
       // Keep the order of execution
-      this.fetchOriginOptions()
+      this.fetchRemoteOptions()
     },
 
     close () {

@@ -58,15 +58,15 @@ export default {
   data () {
     return {
       fetchLoading: false,
-      originOptions: []
+      remoteOptions: []
     }
   },
 
   computed: {
     localOptions () {
-      const { optionsFetchApi, options, originOptions, labelFieldName, valueFieldName } = this
+      const { optionsFetchApi, options, remoteOptions, labelFieldName, valueFieldName } = this
 
-      return (typeof optionsFetchApi === 'function' ? originOptions : options).map(option => ({
+      return (typeof optionsFetchApi === 'function' ? remoteOptions : options).map(option => ({
         ...option,
         label: option[labelFieldName],
         value: option[valueFieldName]
@@ -87,20 +87,20 @@ export default {
   },
 
   methods: {
-    async fetchOriginOptions () {
+    async fetchRemoteOptions () {
       const {
         optionsFetchApi,
         immediate,
-        originOptions
+        remoteOptions
       } = this
 
       if (
         typeof optionsFetchApi === 'function' &&
         !immediate &&
-        originOptions.length === 0
+        remoteOptions.length === 0
       ) {
         this.fetchLoading = true
-        this.originOptions = await optionsFetchApi().finally(() => {
+        this.remoteOptions = await optionsFetchApi().finally(() => {
           this.fetchLoading = false
         })
 
