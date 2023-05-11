@@ -1,4 +1,4 @@
-import { DomClassesType } from '../types/common'
+import { type DomClassesType } from '../types/common'
 
 const prefix = 'vanilla-mentions__'
 

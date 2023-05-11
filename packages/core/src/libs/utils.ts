@@ -1,4 +1,4 @@
-import { MentionOption } from '../types/mentions'
+import { type MentionOption } from '../types/mentions'
 import { DOM_CLASSES, MENTION_DOM_REG } from './config'
 
 export const computePosition = (contrastElement: HTMLElement, targetElement: HTMLElement) => {
@@ -51,7 +51,8 @@ export const createMentionElement = (name: string, id: string | number, prefix: 
   oM.className = DOM_CLASSES.MENTION
   oM.setAttribute('data-id', `${id}`)
   oM.setAttribute('data-name', name)
-  // @ts-ignore
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-expect-error
   oM.setAttribute('contenteditable', false)
   oM.innerText = `${prefix}${name}${suffix}`
   return oM
@@ -96,11 +97,11 @@ export function integerValidator (value: number) {
   return !Number.isNaN(value) && value >= 0
 }
 
-export const valueFormatter = (innerHTML: string = '', parser?: (id: string, name: string) => string) => {
+export const valueFormatter = (innerHTML = '', parser?: (id: string, name: string) => string) => {
   return innerHTML
     .replace(
       MENTION_DOM_REG,
-      (_, $id, $name) => {
+      (_, $id: string, $name: string) => {
         return typeof parser === 'function'
           ? parser($id, $name)
           : `#{name:${$name},id:${$id}}`

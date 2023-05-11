@@ -1,10 +1,9 @@
-// eslint-disable-next-line no-undef
 export const createElement = <T extends keyof HTMLElementTagNameMap>(
-  tagName: null | T,
-  props: null | Record<string, any>,
+  tagName: T,
+  props: null | Record<string, string>,
   childrens: Array<string | Text | HTMLElement> = []
 ) => {
-  if (!tagName && !childrens?.[0]) {
+  if (!tagName || !childrens?.[0]) {
     throw new TypeError(`"tagName" expect a HTMLElementTagName, but got "${tagName}"`)
   }
 
@@ -14,7 +13,7 @@ export const createElement = <T extends keyof HTMLElementTagNameMap>(
 
   const el = document.createElement(tagName)
 
-  if (props) {
+  if (props != null) {
     Object.entries(props).forEach(([key, value]) => {
       el.setAttribute(key, value)
     })
