@@ -1,6 +1,30 @@
-import { type DomClassesType } from '../types/common'
+import { MentionDropdownListOption } from '../libs/renderer'
+import { MentionOptions } from '../mentions'
+import { DomClassesType } from '../types'
 
 const prefix = 'vanilla-mentions__'
+
+export const initialOptions: Required<MentionOptions> = {
+  type: 'input',
+  value: '',
+  initialValue: '',
+  disabled: false,
+  readonly: false,
+  prefix: '@',
+  suffix: ' ',
+  maxLength: 0,
+  getMentionLength: undefined,
+  showStatistics: undefined,
+  formatter: null,
+  options: [],
+  labelFieldName: 'name',
+  valueFieldName: 'id',
+  optionsFetchApi: undefined,
+  immediate: false,
+  filterOption: (option: MentionDropdownListOption, filterValue: string) => option.name.toLowerCase().indexOf(filterValue.toLowerCase()) > -1,
+  dropdownMaxWidth: undefined,
+  dropdownMaxHeight: 200
+}
 
 export const DOM_CLASSES = (() => {
   const arr = [

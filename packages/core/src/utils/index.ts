@@ -1,5 +1,13 @@
-import { type MentionOption } from '../types/mentions'
-import { DOM_CLASSES, MENTION_DOM_REG } from './config'
+import { MentionDropdownListOption } from '../libs/renderer'
+import { DOM_CLASSES, MENTION_DOM_REG, initialOptions } from '../config'
+import { MentionOptions } from '../mentions'
+
+export const mergeOptions = <T extends MentionOptions>(options?: T): Required<T> => {
+  return {
+    ...initialOptions,
+    ...options
+  } as unknown as Required<T>
+}
 
 export const computePosition = (contrastElement: HTMLElement, targetElement: HTMLElement) => {
   const contrastRect = contrastElement.getBoundingClientRect()
@@ -113,7 +121,7 @@ export const valueFormatter = (innerHTML = '', parser?: (id: string, name: strin
 
 export const isEmptyTextNode = (node: Node) => node.nodeType === 3 && !node.nodeValue?.length
 
-export const computeMentionLength = (mention: MentionOption, calculator?: (m: MentionOption) => number) => {
+export const computeMentionLength = (mention: MentionDropdownListOption, calculator?: (m: MentionDropdownListOption) => number) => {
   return typeof calculator === 'function'
     ? calculator(mention)
     : `#{name:${mention.label},id:${mention.value}}`.length
