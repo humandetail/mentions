@@ -1,0 +1,115 @@
+.vanilla-mentions__container {
+  position: relative;
+}
+
+.vanilla-mentions__input {
+  padding: 8px;
+  font-size: 16px;
+  line-height: 1.5;
+  border: 1px solid #e1e1e1;
+  border-radius: 4px;
+
+  &[data-type="textarea"] {
+    height: 48px;
+    overflow: auto;
+    resize: both;
+  }
+
+  &.vanilla-mentions__focused {
+    border: 1px solid #40a9ff;
+    box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+    outline: none;
+  }
+
+  &.vanilla-mentions__disabled {
+    color: #00000040;
+    background-color: #f5f5f5;
+    border-color: #d9d9d9;
+    box-shadow: none;
+    cursor: not-allowed;
+  }
+}
+
+.vanilla-mentions__mention {
+  font-style: normal;
+  white-space: pre-wrap;
+
+  * {
+    display: inline-block;
+  }
+}
+
+.vanilla-mentions__dropdown {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: max-content;
+  z-index: 2147483647;
+
+  .vanilla-mentions__dropdown-list {
+    list-style: none;
+    max-height: 100%;
+    overflow-y: auto;
+    margin: 0;
+    padding: 4px;
+    border-radius: 4px;
+    border: 1px solid #f1f1f1;
+    background-color: #fff;
+
+    .vanilla-mentions__dropdown-list-option {
+      padding: 0 4px;
+      line-height: 28px;
+      border-radius: 4px;
+      background-color: transparent;
+      cursor: pointer;
+      white-space: nowrap;
+
+      &.vanilla-mentions__dropdown-list-option-active {
+        background-color: #efefef;
+      }
+
+      &.vanilla-mentions__dropdown-list-option-disabled {
+        color: #e1e1e1;
+        cursor: not-allowed;
+      }
+    }
+  }
+
+  .vanilla-mentions__dropdown-empty {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 0;
+    border-radius: 4px;
+    border: 1px solid #e1e1e1;
+    white-space: nowrap;
+    font-size: 12px;
+    color: #ccc;
+  }
+
+  .vanilla-mentions__dropdown-loading {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba($color: #fff, $alpha: 0.3);
+
+    .vanilla-mentions__dropdown-loading-spin {
+      animation: VueMentionsSpin 1s infinite;
+    }
+  }
+}
+
+@keyframes VueMentionsSpin {
+  0% {
+    transform: rotate(0);
+  }
+  100% {
+    transform: rotate(1turn);
+  }
+}

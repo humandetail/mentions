@@ -4,8 +4,8 @@ export default defineConfig({
   build: {
     lib: {
       entry: './index.ts',
-      name: 'vue-mentions',
-      fileName: 'vue-mentions'
+      name: 'mentions',
+      fileName: 'mentions'
     }
   }
 })

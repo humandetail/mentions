@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "vue": "^3.2.47",
-    "vue-mentions": "workspace:^0.0.1"
+    "@mentions/vanilla": "workspace:^0.0.1"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^4.1.0",

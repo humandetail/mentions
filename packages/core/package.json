@@ -1,9 +1,16 @@
 {
-  "name": "vue-mentions",
+  "name": "@mentions/vanilla",
   "private": false,
   "version": "0.0.1",
   "type": "module",
-  "main": "dist/vue-mentions.js",
+  "main": "dist/mentions.js",
+  "exports": {
+    ".": {
+      "import": "./dist/mentions.js"
+    },
+    "./metnions.css": "./dist/assets/style.css"
+  },
+  "files": ["dist/*"],
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",

@@ -1,1 +1,5 @@
-export default 1
+import { createMentions } from './src/mentions'
+
+export {
+  createMentions
+}
