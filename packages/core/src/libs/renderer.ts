@@ -1,14 +1,14 @@
 export const createElement = <T extends keyof HTMLElementTagNameMap>(
   tagName: T,
   props: null | Record<string, string>,
-  childrens: Array<string | Text | HTMLElement> = []
+  children: Array<string | Text | HTMLElement> = []
 ) => {
-  if (!tagName || !childrens?.[0]) {
+  if (!tagName || !children?.[0]) {
     throw new TypeError(`"tagName" expect a HTMLElementTagName, but got "${tagName}"`)
   }
 
   if (!tagName) {
-    return document.createTextNode(childrens[0] as string)
+    return document.createTextNode(children[0] as string)
   }
 
   const el = document.createElement(tagName)
@@ -19,7 +19,7 @@ export const createElement = <T extends keyof HTMLElementTagNameMap>(
     })
   }
 
-  childrens?.forEach(child => {
+  children?.forEach(child => {
     if (typeof child === 'string') {
       el.appendChild(document.createTextNode(child))
     } else {
