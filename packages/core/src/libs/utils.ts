@@ -90,7 +90,7 @@ export const isNodeAfterNode = (node1: Node, node2: Node) => {
  * 判断元素是否为 Mention 元素
  */
 export const isMention = (node: Element) => {
-  return [...(document.querySelectorAll(`.${DOM_CLASSES.MENTION}`) as any)].some(m => m.contains(node))
+  return [...document.querySelectorAll(`.${DOM_CLASSES.MENTION}`) as unknown as HTMLElement[]].some(m => m.contains(node))
 }
 
 export function integerValidator (value: number) {

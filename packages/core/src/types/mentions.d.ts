@@ -1,4 +1,4 @@
-export interface MentionOption extends Record<string, any> {
+export interface MentionOption extends Record<string, unknown> {
   label: string
   value: string
   disabled?: boolean
@@ -20,17 +20,17 @@ export interface ComponentProps {
   prefix?: string
   suffix?: string
   maxLength?: number
-  getMentionLength?: Function
-  showStatistics?: Function
+  getMentionLength?: () => number
+  showStatistics?: () => string
   formatter?: Formatter
 
   options?: MentionOption[]
   labelFieldName?: string
   valueFieldName?: string
-  optionsFetchApi: (...args: any[]) => Promise<MentionOption[]>
-  immediate?: boolean,
-  loading?: boolean,
+  optionsFetchApi: (...args: unknown[]) => Promise<MentionOption[]>
+  immediate?: boolean
+  loading?: boolean
   filterOption?: (option: MentionOption, filterValue: string) => boolean
-  dropdownMaxWidth?: number,
+  dropdownMaxWidth?: number
   dropdownMaxHeight?: number
 }

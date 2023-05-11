@@ -1,12 +1,12 @@
 import { DOM_CLASSES } from './libs/config'
 import { createElement } from './libs/renderer'
-import { ComponentProps } from './types/mentions'
+import { type ComponentProps } from './types/mentions'
 
 const createMentions = (options?: ComponentProps) => {
   console.log(options)
   const oEditor = createElement('div', {
     class: `${DOM_CLASSES.INPUT}`,
-    contenteditable: true
+    contenteditable: 'contenteditable'
   })
   const oContainer = createElement('div', {
     class: DOM_CLASSES.CONTAINER
