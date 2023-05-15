@@ -13,16 +13,16 @@ export const initialOptions: Required<MentionOptions> = {
   prefix: '@',
   suffix: ' ',
   maxLength: 0,
-  getMentionLength: undefined,
-  showStatistics: undefined,
+  getMentionLength: null,
+  showStatistics: null,
   formatter: null,
   options: [],
   labelFieldName: 'name',
   valueFieldName: 'id',
-  optionsFetchApi: undefined,
+  optionsFetchApi: null,
   immediate: false,
   filterOption: (option: MentionDropdownListOption, filterValue: string) => option.name.toLowerCase().indexOf(filterValue.toLowerCase()) > -1,
-  dropdownMaxWidth: undefined,
+  dropdownMaxWidth: null,
   dropdownMaxHeight: 200
 }
 
@@ -77,7 +77,7 @@ export function integerValidator (value: number) {
   return !Number.isNaN(value) && value >= 0
 }
 
-export const MENTION_REG = /^#{name:([\w\W]+?),id:([\w\W]+?)}/
+export const MENTION_REG = /#{name:([^\}]+?),id:([^\}]+?)}/g
 
 export const MENTION_DOM_REG = /<\s*em[^>]*class="[^"]*mention[^"]*"[^>]*data-id="([^"]*)"[^>]*data-name="([^"]*)"[^>]*>[\w\W]*?<\/\s*em\s*>/gi
 

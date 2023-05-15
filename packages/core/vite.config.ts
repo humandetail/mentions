@@ -6,6 +6,7 @@ export default defineConfig({
       entry: './index.ts',
       name: 'mentions',
       fileName: 'mentions'
-    }
+    },
+    sourcemap: true
   }
 })

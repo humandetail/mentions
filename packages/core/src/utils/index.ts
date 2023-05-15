@@ -1,6 +1,7 @@
 import { MentionDropdownListOption } from '../libs/renderer'
-import { DOM_CLASSES, MENTION_DOM_REG, initialOptions } from '../config'
+import { DOM_CLASSES, MENTION_DOM_REG, MENTION_REG, initialOptions } from '../config'
 import { MentionOptions } from '../mentions'
+import { HTMLString } from '../types'
 
 export const mergeOptions = <T extends MentionOptions>(options?: T): Required<T> => {
   return {
@@ -97,16 +98,18 @@ export const isNodeAfterNode = (node1: Node, node2: Node) => {
 /**
  * 判断元素是否为 Mention 元素
  */
-export const isMention = (node: Element) => {
+export const isMention = (node: Node) => {
   return [...document.querySelectorAll(`.${DOM_CLASSES.MENTION}`) as unknown as HTMLElement[]].some(m => m.contains(node))
 }
 
 export function integerValidator (value: number) {
-  return !Number.isNaN(value) && value >= 0
+  return !Number.isNaN(value) && value > 0
 }
 
-export const valueFormatter = (innerHTML = '', parser?: (id: string, name: string) => string) => {
-  return innerHTML
+export const valueFormatter = (innerHTML: HTMLString, parser?: (id: string, name: string) => string) => {
+  const oDiv = document.createElement('div')
+  oDiv.innerHTML = innerHTML
+    .replace(/(<(?:br)[^>]*>)/ig, '\n')
     .replace(
       MENTION_DOM_REG,
       (_, $id: string, $name: string) => {
@@ -114,15 +117,36 @@ export const valueFormatter = (innerHTML = '', parser?: (id: string, name: strin
           ? parser($id, $name)
           : `#{name:${$name},id:${$id}}`
       }
-    ) // 解析 mention 块
-    .replace(/(<((?:p|div|br))[^>]*>)/ig, '\n$1') // 块级标签增加\n
-    .replace(/<[^>]*>/g, '') // 移除剩余所有标签
+    )
+  return oDiv.innerText
 }
 
 export const isEmptyTextNode = (node: Node) => node.nodeType === 3 && !node.nodeValue?.length
 
-export const computeMentionLength = (mention: MentionDropdownListOption, calculator?: (m: MentionDropdownListOption) => number) => {
+export const computeMentionLength = (mention: MentionDropdownListOption, calculator?: null | ((m: MentionDropdownListOption) => number)) => {
   return typeof calculator === 'function'
     ? calculator(mention)
-    : `#{name:${mention.label},id:${mention.value}}`.length
+    : `#{name:${mention.name},id:${mention.id}}`.length
+}
+
+export const getMentionPattern = (pattern: RegExp | string) => {
+  const g = new RegExp(pattern, 'g')
+  return {
+    global: g,
+    single: new RegExp(g.source, g.flags.replace('g', ''))
+  }
+}
+
+export const getValueLength = (value: string, pattern: RegExp = MENTION_REG, getMentionLength?: null | ((mention: MentionDropdownListOption) => number)) => {
+  const mentionPattern = getMentionPattern(pattern)
+  const match = value.match(mentionPattern.global) as unknown as string[]
+    return value.replace(mentionPattern.global, '').length + (match ?? []).reduce((count: number, mentionStr: string) => {
+      const m = mentionStr.match(mentionPattern.single)
+
+      return count + (
+        !m
+          ? 0
+          : computeMentionLength({ name: m[1], id: m[2] }, getMentionLength)
+      )
+    }, 0)
 }
