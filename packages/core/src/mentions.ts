@@ -1,10 +1,9 @@
 import EventEmitter from './libs/EventEmitter'
 import { DOM_CLASSES } from './config'
 import { createEventHandler } from './libs/eventHandler'
-import { MentionDropdownListOption, createRenderer } from './libs/renderer'
-import { HTMLString, MentionConstructor } from './types'
-import { getValueLength } from './utils'
-import { mergeOptions } from './utils'
+import { type MentionDropdownListOption, createRenderer } from './libs/renderer'
+import type { HTMLString, MentionConstructor } from './types'
+import { getValueLength, mergeOptions } from './utils'
 
 export interface Formatter {
   pattern: RegExp
@@ -27,10 +26,10 @@ export interface MentionOptions {
   options?: MentionDropdownListOption[]
   labelFieldName?: string
   valueFieldName?: string
-  optionsFetchApi?: null | ((...args: any[]) => Promise<MentionDropdownListOption[]>)
-  immediate?: boolean,
+  optionsFetchApi?: null | ((...args: unknown[]) => Promise<MentionDropdownListOption[]>)
+  immediate?: boolean
   filterOption?: (option: MentionDropdownListOption, filterValue: string) => boolean
-  dropdownMaxWidth?: number | null,
+  dropdownMaxWidth?: number | null
   dropdownMaxHeight?: number | null
 }
 
@@ -135,7 +134,7 @@ const createState = (options: Required<MentionOptions>): State => {
       if (typeof filterOption === 'function') {
         return localOptions.filter(option => filterOption(option, filterValue))
       }
-      return localOptions.filter(option => option.name.toLowerCase().indexOf(filterValue.toLowerCase()) >= 0)
+      return localOptions.filter(option => option.name.toLowerCase().includes(filterValue.toLowerCase()))
     },
 
     record: createRecord('', -1, -1, -1, -1),
@@ -176,6 +175,7 @@ const createMentions = (opts?: MentionOptions): MentionConstructor => {
       }
       if (k === 'activeOptionIdx') {
         if (t.dropdownVisible && context.intersectionObserver) {
+          // eslint-disable-next-line @typescript-eslint/no-unused-expressions
           document.body.offsetHeight
           context.intersectionObserver.observe(document.querySelector(`.${DOM_CLASSES.DROPDOWN_LIST_OPTION}.${DOM_CLASSES.DROPDOWN_LIST_OPTION_ACTIVE}`)!)
         }

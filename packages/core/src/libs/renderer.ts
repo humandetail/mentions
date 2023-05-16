@@ -1,5 +1,5 @@
 import { DOM_CLASSES, MENTION_REG } from '../config'
-import { Context, MentionOptions } from '../mentions'
+import type { Context, MentionOptions } from '../mentions'
 import { computeMentionLength, createMentionElement, getValueLength, insertNodeAfterRange, integerValidator, isEmptyTextNode, valueFormatter } from '../utils'
 
 export interface MentionDropdownListOption {
@@ -10,15 +10,15 @@ export interface MentionDropdownListOption {
 }
 
 const createRenderer = (options: Required<MentionOptions>) => {
-  function createElement<T extends null = null>(tagName: T, props: null, children: Array<string | Text | HTMLElement | DocumentFragment>): Text
-  function createElement<T extends (keyof HTMLElementTagNameMap)>(tagName: T, props: null | Record<string, any>, children?: Array<string | Text | HTMLElement | DocumentFragment>): HTMLElementTagNameMap[T]
-  function createElement<T extends (keyof HTMLElementTagNameMap) | null>(
+  function createElement<T extends null = null> (tagName: T, props: null, children: Array<string | Text | HTMLElement | DocumentFragment>): Text
+  function createElement<T extends (keyof HTMLElementTagNameMap)> (tagName: T, props: null | Record<string, string | boolean>, children?: Array<string | Text | HTMLElement | DocumentFragment>): HTMLElementTagNameMap[T]
+  function createElement<T extends (keyof HTMLElementTagNameMap) | null> (
     tagName: null | T,
-    props: null | Record<string, any>,
+    props: null | Record<string, string | boolean>,
     children: Array<string | Text | HTMLElement | DocumentFragment> = []
   ) {
     if (!tagName && !children?.[0]) {
-      throw new TypeError(`"tagName" expect a HTMLElementTagName, but got "${tagName}"`)
+      throw new TypeError(`"tagName" expect a HTMLElementTagName, but got "${tagName!}"`)
     }
 
     if (!tagName) {
@@ -29,7 +29,7 @@ const createRenderer = (options: Required<MentionOptions>) => {
 
     if (props) {
       Object.entries(props).forEach(([key, value]) => {
-        el.setAttribute(key, value)
+        el.setAttribute(key, value as string)
       })
     }
 
@@ -47,15 +47,15 @@ const createRenderer = (options: Required<MentionOptions>) => {
   const formatContent = (val: string) => {
     const { formatter } = options
 
-    const reg = formatter?.pattern || MENTION_REG
+    const reg = formatter?.pattern ?? MENTION_REG
 
-    return val.replace(/\n/g, '<br />').replace(reg, (_, name, id) => {
+    return val.replace(/\n/g, '<br />').replace(reg, (_, name: string, id: string) => {
       return `<em
         class="${DOM_CLASSES.MENTION}"
         data-id=${id}"
         data-name="${name}"
-        contenteditable="${false}"
-      >${ renderMentionContent(id, name) }</em>`
+        contenteditable="false"
+      >${renderMentionContent(id, name)}</em>`
     })
   }
 
@@ -76,22 +76,31 @@ const createRenderer = (options: Required<MentionOptions>) => {
       text = text.slice(0, maxLength - valueLength)
     }
     // 1. 查询 oAt 在 childNodes 中的位置 oAtIndex
-    const childNodes = [...editor.childNodes as any]
+    const childNodes = Array.from(editor.childNodes)
     const oAtIndex = childNodes.indexOf(oAt)
     // 2. 查询当前光标所在位置
     const selection = window.getSelection()!
     const {
-      anchorNode,
       anchorOffset,
-      focusNode,
       focusOffset
     } = selection
+
+    let anchorNode = selection.anchorNode! as HTMLElement
+    let focusNode = selection.focusNode! as HTMLElement
 
     const prevNode = childNodes[oAtIndex - 1]
     const nextNode = childNodes[oAtIndex + 1]
 
-    const anchorNodeIdx = childNodes.indexOf((anchorNode?.parentNode as HTMLElement)?.classList.contains(DOM_CLASSES.AT) ? anchorNode!.parentNode : anchorNode)
-    const focusNodeIdx = childNodes.indexOf((focusNode?.parentNode as HTMLElement)?.classList.contains(DOM_CLASSES.AT) ? focusNode!.parentNode : focusNode)
+    if ((focusNode.parentNode! as HTMLElement).classList.contains(DOM_CLASSES.AT)) {
+      focusNode = focusNode.parentNode as HTMLElement
+    }
+
+    if ((anchorNode.parentNode! as HTMLElement).classList.contains(DOM_CLASSES.AT)) {
+      anchorNode = anchorNode.parentNode as HTMLElement
+    }
+
+    const anchorNodeIdx = childNodes.indexOf(anchorNode)
+    const focusNodeIdx = childNodes.indexOf(focusNode)
 
     const anchorNodeIsEditor = anchorNode === editor
     const focusNodeIsEditor = focusNode === editor
@@ -104,8 +113,8 @@ const createRenderer = (options: Required<MentionOptions>) => {
     const prevNodeType = prevNode.nodeType
     const nextNodeType = nextNode.nodeType
     // 记录 Node 内容长度
-    const prevNodeValueLength = prevNode?.nodeValue?.length || 0
-    const textNodeValueLength = (oAt.firstChild as Text)?.length || 0
+    const prevNodeValueLength: number = prevNode?.nodeValue?.length ?? 0
+    const textNodeValueLength: number = (oAt.firstChild as Text)?.length ?? 0
     // const nextNodeValueLength = nextNode?.nodeValue?.length || 0
 
     // 3. 替换内容
@@ -223,6 +232,7 @@ const createRenderer = (options: Required<MentionOptions>) => {
         )
         break
       case 'activeOptionIdx':
+        // eslint-disable-next-line no-case-declarations
         const oOptions = oDropdown.querySelectorAll(`.${DOM_CLASSES.DROPDOWN_LIST_OPTION}`)
         oOptions.forEach(option => {
           option.classList.remove(DOM_CLASSES.DROPDOWN_LIST_OPTION_ACTIVE)
@@ -244,8 +254,8 @@ const createRenderer = (options: Required<MentionOptions>) => {
     } = context
 
     dropdownContainer.appendChild(createElement('div', {
-      class: DOM_CLASSES.DROPDOWN,
-    },[
+      class: DOM_CLASSES.DROPDOWN
+    }, [
       currentOptions.length === 0
         ? renderDropdownEmpty()
         : renderMentionsList(context),
@@ -408,7 +418,7 @@ const createRenderer = (options: Required<MentionOptions>) => {
 
     let match
 
-    const reg = formatter?.pattern || MENTION_REG
+    const reg = formatter?.pattern ?? MENTION_REG
 
     const currentMentions = []
     while (val?.length) {
@@ -536,7 +546,7 @@ const createRenderer = (options: Required<MentionOptions>) => {
     selection.addRange(range)
   }
 
-  const fetchRemoteOptions = async  (context: Context) => {
+  const fetchRemoteOptions = async (context: Context) => {
     const {
       optionsFetchApi,
       immediate,

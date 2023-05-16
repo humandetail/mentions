@@ -1,5 +1,5 @@
 import { DOM_CLASSES } from '../config'
-import { Context } from '../mentions'
+import type { Context } from '../mentions'
 import { computePosition, createAtElement, getValueLength, integerValidator, isMention, isNodeAfterNode, setRangeAfterNode, valueFormatter } from '../utils'
 
 const createEventHandler = () => {
@@ -132,7 +132,7 @@ const createEventHandler = () => {
     }
   }
 
-  const handleInput = async (e: Event) => {
+  const handleInput = (e: Event) => {
     const { data, inputType } = e as InputEvent
     const {
       state: {
@@ -155,7 +155,7 @@ const createEventHandler = () => {
       } else {
         _context.state.filterValue = !filterValue
           ? data ?? ''
-          : `${filterValue}${data}`
+          : `${filterValue}${data!}`
 
         if (_context.state.currentOptions.length === 0) {
           close()
@@ -286,7 +286,10 @@ const createEventHandler = () => {
     ;[...oList.children as unknown as HTMLElement[]].some((child, idx) => {
       if (child.contains(target)) {
         index = idx
+        return true
       }
+
+      return false
     })
 
     _context.state.activeOptionIdx = index
@@ -305,7 +308,10 @@ const createEventHandler = () => {
     ;[...oList.children as unknown as HTMLElement[]].some((child, idx) => {
       if (child.contains(target)) {
         index = idx
+        return true
       }
+
+      return false
     })
 
     _context.state.activeOptionIdx = index
@@ -326,7 +332,16 @@ const createEventHandler = () => {
     editor.addEventListener('blur', handleBlur)
   }
 
-  const cancelEvents = (_context: Context) => {}
+  const cancelEvents = ({ editor }: Context) => {
+    editor.removeEventListener('beforeinput', handleBeforeInput)
+    editor.removeEventListener('input', handleInput)
+    editor.removeEventListener('keydown', handleKeydown)
+    editor.removeEventListener('click', handleClick)
+    editor.removeEventListener('scroll', handleScroll)
+    editor.removeEventListener('mousedown', handleMousedown)
+    editor.removeEventListener('focus', handleFocus)
+    editor.removeEventListener('blur', handleBlur)
+  }
 
   return {
     registerEvents,

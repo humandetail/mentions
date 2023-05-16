@@ -1,6 +1,6 @@
-import { MentionDropdownListOption } from '../libs/renderer'
-import { MentionOptions } from '../mentions'
-import { DomClassesType } from '../types'
+import type { MentionDropdownListOption } from '../libs/renderer'
+import type { MentionOptions } from '../mentions'
+import type { DomClassesType } from '../types'
 
 const prefix = 'vanilla-mentions__'
 
@@ -21,7 +21,7 @@ export const initialOptions: Required<MentionOptions> = {
   valueFieldName: 'id',
   optionsFetchApi: null,
   immediate: false,
-  filterOption: (option: MentionDropdownListOption, filterValue: string) => option.name.toLowerCase().indexOf(filterValue.toLowerCase()) > -1,
+  filterOption: (option: MentionDropdownListOption, filterValue: string) => option.name.toLowerCase().includes(filterValue.toLowerCase()),
   dropdownMaxWidth: null,
   dropdownMaxHeight: 200
 }
@@ -77,7 +77,7 @@ export function integerValidator (value: number) {
   return !Number.isNaN(value) && value >= 0
 }
 
-export const MENTION_REG = /#{name:([^\}]+?),id:([^\}]+?)}/g
+export const MENTION_REG = /#{name:([^}]+?),id:([^}]+?)}/g
 
 export const MENTION_DOM_REG = /<\s*em[^>]*class="[^"]*mention[^"]*"[^>]*data-id="([^"]*)"[^>]*data-name="([^"]*)"[^>]*>[\w\W]*?<\/\s*em\s*>/gi
 

@@ -23,6 +23,7 @@ module.exports = {
 
       rules: {
         '@typescript-eslint/key-spacing': 'off',
+        '@typescript-eslint/no-floating-promises': 'off',
         '@typescript-eslint/no-non-null-assertion': 'off',
         '@typescript-eslint/consistent-type-assertions': 'off',
         '@typescript-eslint/strict-boolean-expressions': 'off',
@@ -32,5 +33,6 @@ module.exports = {
   ],
 
   rules: {
+    'n/no-callback-literal': 'off'
   }
 }

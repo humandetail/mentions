@@ -1,7 +1,7 @@
-import { MentionDropdownListOption } from '../libs/renderer'
+import { type MentionDropdownListOption } from '../libs/renderer'
 import { DOM_CLASSES, MENTION_DOM_REG, MENTION_REG, initialOptions } from '../config'
-import { MentionOptions } from '../mentions'
-import { HTMLString } from '../types'
+import { type MentionOptions } from '../mentions'
+import { type HTMLString } from '../types'
 
 export const mergeOptions = <T extends MentionOptions>(options?: T): Required<T> => {
   return {
@@ -140,13 +140,13 @@ export const getMentionPattern = (pattern: RegExp | string) => {
 export const getValueLength = (value: string, pattern: RegExp = MENTION_REG, getMentionLength?: null | ((mention: MentionDropdownListOption) => number)) => {
   const mentionPattern = getMentionPattern(pattern)
   const match = value.match(mentionPattern.global) as unknown as string[]
-    return value.replace(mentionPattern.global, '').length + (match ?? []).reduce((count: number, mentionStr: string) => {
-      const m = mentionStr.match(mentionPattern.single)
+  return value.replace(mentionPattern.global, '').length + (match ?? []).reduce((count: number, mentionStr: string) => {
+    const m = mentionStr.match(mentionPattern.single)
 
-      return count + (
-        !m
-          ? 0
-          : computeMentionLength({ name: m[1], id: m[2] }, getMentionLength)
-      )
-    }, 0)
+    return count + (
+      !m
+        ? 0
+        : computeMentionLength({ name: m[1], id: m[2] }, getMentionLength)
+    )
+  }, 0)
 }

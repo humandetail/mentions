@@ -3,16 +3,14 @@
  */
 
 export interface EventCallback {
-  (...args: any[]): any
-  listen?: () => any
+  (...args: unknown[]): void
+  listen?: () => void
 }
 
-export interface EventWrapper {
-  [key: string]: (EventCallback)[]
-};
+export type EventWrapper = Record<string, (EventCallback)[]>
 
 class EventEmitter {
-  static defaultMaxListener: number = 10
+  static defaultMaxListener = 10
 
   protected _maxListeners: number | undefined
   private _events: EventWrapper
@@ -48,7 +46,7 @@ class EventEmitter {
 
   /**
    * 监听事件
-   * @param { string } type - 事件监听类型 
+   * @param { string } type - 事件监听类型
    * @param { EventCallback } cb - 回调函数
    */
   on (type: string, cb: EventCallback) {
@@ -66,15 +64,14 @@ class EventEmitter {
 
   /**
    * 只监听一次事件
-   * @param { string } type - 事件监听类型 
+   * @param { string } type - 事件监听类型
    * @param { EventCallback } cb - 回调函数
    */
   once (type: string, cb: EventCallback) {
-    const that = this
-    function wrap (...args: any[]): void {
+    const wrap = (...args: unknown[]): void => {
       cb(...args)
       // 当回调函数被调用之后，立即解除监听
-      that.off(type, wrap)
+      this.off(type, wrap)
     }
 
     // 自定义属性
@@ -87,17 +84,17 @@ class EventEmitter {
    * @param { string } type - 事件类型
    * @param { any[] } args - 传递的参数集合
    */
-  emit (type: string, ...args: any[]) {
+  emit (type: string, ...args: unknown[]) {
     if (this._events[type]) {
       this._events[type].forEach((listener) => {
         listener.call(this, ...args)
-      });
+      })
     }
   }
 
   /**
    * 移除事件监听
-   * @param { string } type - 事件监听类型 
+   * @param { string } type - 事件监听类型
    * @param { EventCallback } cb - 回调函数
    */
   off (type: string, cb: EventCallback): void {
@@ -105,7 +102,7 @@ class EventEmitter {
       // 移除相关的监听器
       this._events[type] = this._events[type].filter((listener) => {
         return cb !== listener && cb !== listener.listen
-      });
+      })
     }
   }
 
