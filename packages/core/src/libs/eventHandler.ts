@@ -168,7 +168,7 @@ const createEventHandler = () => {
 
     // 输入达到最大值的时候还原输入框的值
     if (integerValidator(maxLength) && getValueLength(value) > maxLength) {
-      _context.renderer.recordState(_context)
+      _context.renderer.restoreState(_context)
       return
     }
 
