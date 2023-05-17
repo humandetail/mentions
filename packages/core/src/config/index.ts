@@ -73,10 +73,6 @@ export const INSERT_TEXT_TYPE = [
   'insertLink'
 ]
 
-export function integerValidator (value: number) {
-  return !Number.isNaN(value) && value >= 0
-}
-
 export const MENTION_REG = /#{name:([^}]+?),id:([^}]+?)}/g
 
 export const MENTION_DOM_REG = /<\s*em[^>]*class="[^"]*mention[^"]*"[^>]*data-id="([^"]*)"[^>]*data-name="([^"]*)"[^>]*>[\w\W]*?<\/\s*em\s*>/gi

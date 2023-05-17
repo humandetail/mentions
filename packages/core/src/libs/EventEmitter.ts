@@ -3,7 +3,8 @@
  */
 
 export interface EventCallback {
-  (...args: unknown[]): void
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  (...args: any[]): void
   listen?: () => void
 }
 

@@ -1,4 +1,4 @@
-import { defineConfig } from 'vite'
+import { defineConfig } from 'vitest/config'
 
 export default defineConfig({
   build: {
@@ -8,5 +8,11 @@ export default defineConfig({
       fileName: 'mentions'
     },
     sourcemap: true
+  },
+  test: {
+    environment: 'happy-dom',
+    coverage: {
+      provider: 'c8'
+    }
   }
 })

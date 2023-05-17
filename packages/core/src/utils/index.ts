@@ -103,7 +103,7 @@ export const isMention = (node: Node) => {
 }
 
 export function integerValidator (value: number) {
-  return !Number.isNaN(value) && value > 0
+  return typeof value === 'number' && !Number.isNaN(value) && value > 0 && value % 1 === 0
 }
 
 export const valueFormatter = (innerHTML: HTMLString, parser?: (id: string, name: string) => string) => {
