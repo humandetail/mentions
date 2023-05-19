@@ -15,7 +15,7 @@ onMounted(() => {
   const editor = createMentions({
     value: 'Hello #{name:张 三,id:1}，你好啊#{name:李 四,id:2}，这里是#{name:王 五,id:3}.\nWorld!',
     options: [
-      { id: '1', name: '张 三' },
+      { id: '1', name: '张 三', disabled: true },
       { id: '2', name: '李 四' },
       { id: '3', name: '王 五' },
       { id: '4', name: '赵 六' },

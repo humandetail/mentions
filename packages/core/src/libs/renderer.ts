@@ -115,7 +115,6 @@ const createRenderer = (options: Required<MentionOptions>) => {
     // 记录 Node 内容长度
     const prevNodeValueLength: number = prevNode?.nodeValue?.length ?? 0
     const textNodeValueLength: number = (oAt.firstChild as Text)?.length ?? 0
-    // const nextNodeValueLength = nextNode?.nodeValue?.length || 0
 
     // 3. 替换内容
     editor.replaceChild(document.createTextNode(text), oAt)
@@ -185,223 +184,38 @@ const createRenderer = (options: Required<MentionOptions>) => {
     selection.addRange(range)
   }
 
-  // 激活 dropdown 下列列表
-  const activateDropdown = (context: Context, key: string) => {
+  const appendMentions = (context: Context, mentions: MentionDropdownListOption[]) => {
     const {
       state: {
-        dropdownVisible,
-        fetchLoading,
-        activeOptionIdx,
-        // filterValue,
-        currentOptions
-      },
-      dropdownContainer
-    } = context
-
-    if (!dropdownVisible) {
-      dropdownContainer.innerHTML = ''
-      return
-    }
-
-    let oDropdown = dropdownContainer.firstElementChild as HTMLElement
-
-    if (!oDropdown?.classList.contains(DOM_CLASSES.DROPDOWN)) {
-      renderDropdown(context)
-      oDropdown = dropdownContainer.firstElementChild as HTMLElement
-    }
-
-    if (fetchLoading) {
-      oDropdown.appendChild(renderDropdownLoading())
-    } else {
-      oDropdown.innerHTML = ''
-      // oDropdown.querySelector(`.${DOM_CLASSES.DROPDOWN_LOADING}`)?.remove()
-      oDropdown.appendChild(
-        currentOptions.length === 0
-          ? renderDropdownEmpty()
-          : renderMentionsList(context)
-      )
-    }
-
-    switch (key) {
-      case 'filterValue':
-        oDropdown.innerHTML = ''
-        oDropdown.appendChild(
-          currentOptions.length === 0
-            ? renderDropdownEmpty()
-            : renderMentionsList(context)
-        )
-        break
-      case 'activeOptionIdx':
-        // eslint-disable-next-line no-case-declarations
-        const oOptions = oDropdown.querySelectorAll(`.${DOM_CLASSES.DROPDOWN_LIST_OPTION}`)
-        oOptions.forEach(option => {
-          option.classList.remove(DOM_CLASSES.DROPDOWN_LIST_OPTION_ACTIVE)
-        })
-        oOptions[activeOptionIdx].classList.add(DOM_CLASSES.DROPDOWN_LIST_OPTION_ACTIVE)
-        break
-      default:
-        break
-    }
-  }
-
-  const renderDropdown = (context: Context) => {
-    const {
-      state: {
-        currentOptions,
-        fetchLoading
-      },
-      dropdownContainer
-    } = context
-
-    dropdownContainer.appendChild(createElement('div', {
-      class: DOM_CLASSES.DROPDOWN
-    }, [
-      currentOptions.length === 0
-        ? renderDropdownEmpty()
-        : renderMentionsList(context),
-      ...(fetchLoading ? [renderDropdownLoading()] : [])
-    ]))
-  }
-
-  const renderDropdownEmpty = () => {
-    return createElement('div', {
-      class: DOM_CLASSES.DROPDOWN_EMPTY
-    }, [
-      renderDropdownEmptyGraph(),
-      '暂无数据'
-    ])
-  }
-
-  const renderDropdownLoading = () => {
-    const oLoading = createElement('div', {
-      class: DOM_CLASSES.DROPDOWN_LOADING
-    })
-    oLoading.innerHTML = `<svg focusable="false" class="${DOM_CLASSES.DROPDOWN_LOADING_SPIN}" data-icon="loading" width="1em" height="1em" fill="currentColor" aria-hidden="true" viewBox="0 0 1024 1024"><path d="M988 548c-19.9 0-36-16.1-36-36 0-59.4-11.6-117-34.6-171.3a440.45 440.45 0 00-94.3-139.9 437.71 437.71 0 00-139.9-94.3C629 83.6 571.4 72 512 72c-19.9 0-36-16.1-36-36s16.1-36 36-36c69.1 0 136.2 13.5 199.3 40.3C772.3 66 827 103 874 150c47 47 83.9 101.8 109.7 162.7 26.7 63.1 40.2 130.2 40.2 199.3.1 19.9-16 36-35.9 36z"></path></svg>`
-    return oLoading
-  }
-
-  const renderDropdownEmptyGraph = (width = 48, height = 31) => {
-    return new Range().createContextualFragment(`<svg width="${width}" height="${height}" viewBox="0 0 64 41"><g transform="translate(0 1)" fill="none" fill-rule="evenodd"><ellipse fill="#F5F5F5" cx="32" cy="33" rx="32" ry="7"></ellipse><g fill-rule="nonzero" stroke="#D9D9D9"><path d="M55 12.76L44.854 1.258C44.367.474 43.656 0 42.907 0H21.093c-.749 0-1.46.474-1.947 1.257L9 12.761V22h46v-9.24z"></path><path d="M41.613 15.931c0-1.605.994-2.93 2.227-2.931H55v18.137C55 33.26 53.68 35 52.05 35h-40.1C10.32 35 9 33.259 9 31.137V13h11.16c1.233 0 2.227 1.323 2.227 2.928v.022c0 1.605 1.005 2.901 2.237 2.901h14.752c1.232 0 2.237-1.308 2.237-2.913v-.007z" fill="#FAFAFA"></path></g></g></svg>`)
-  }
-
-  const renderMentionsList = (context: Context) => {
-    const {
-      state: {
-        currentOptions,
-        activeOptionIdx
-      }
-    } = context
-
-    const oList = createElement('ul', {
-      class: DOM_CLASSES.DROPDOWN_LIST
-    }, currentOptions.map((option, index) => (
-      createElement('li', {
-        class: `${DOM_CLASSES.DROPDOWN_LIST_OPTION} ${activeOptionIdx === index
-          ? DOM_CLASSES.DROPDOWN_LIST_OPTION_ACTIVE
-          : ''
-        } ${option.disabled ? DOM_CLASSES.DROPDOWN_LIST_OPTION_DISABLED : ''}`,
-        'data-id': option.id,
-        'data-name': option.name
-      }, [
-        typeof option.customRender === 'function' ? option.customRender(option, index) : option.name
-      ])
-    )))
-
-    oList.addEventListener('mouseenter', context.eventHandler.handleDropdownListOptionMouseenter)
-    oList.addEventListener('mousedown', context.eventHandler.handleDropdownListOptionMousedown)
-    return oList
-    // onMouseenter={ () => this.handleDropdownListOptionMouseenter(index) }
-    // onMousedown={ e => this.handleDropdownListOptionMousedown(index, e) }
-  }
-
-  const initObserver = (context: Context) => {
-    context.intersectionObserver = new IntersectionObserver(entries => {
-      const { intersectionRatio } = entries[0]
-
-      const oList = context.container.querySelector(`.${DOM_CLASSES.DROPDOWN_LIST}`)
-
-      if (!oList) {
-        return
-      }
-
-      const oActive = oList.querySelector<HTMLElement>(`.${DOM_CLASSES.DROPDOWN_LIST_OPTION}.${DOM_CLASSES.DROPDOWN_LIST_OPTION_ACTIVE}`)
-      if (!oActive) {
-        return
-      }
-      context.intersectionObserver?.unobserve(oActive)
-
-      if (intersectionRatio === 1) {
-        return
-      }
-
-      const optionHeight = oActive.getBoundingClientRect().height
-      const paddingTop = parseInt(window.getComputedStyle(oList).paddingTop)
-      oList.scrollTop = context.state.activeOptionIdx * optionHeight + (isNaN(paddingTop) ? 0 : paddingTop) // +4 padding-top
-    })
-  }
-
-  const switchActiveOption = (context: Context) => {
-    const { state: { currentOptions, activeOptionIdx, switchKey } } = context
-    const len = currentOptions.length
-    if (len === 0) {
-      return
-    }
-
-    if (activeOptionIdx === -1) {
-      context.state.activeOptionIdx = switchKey === 'ArrowDown'
-        ? 0
-        : len - 1
-      return
-    }
-
-    if (activeOptionIdx === len - 1 && switchKey === 'ArrowDown') {
-      context.state.activeOptionIdx = 0
-      return
-    }
-    if (activeOptionIdx === 0 && switchKey === 'ArrowUp') {
-      context.state.activeOptionIdx = len - 1
-      return
-    }
-    context.state.activeOptionIdx = switchKey === 'ArrowDown'
-      ? activeOptionIdx + 1
-      : activeOptionIdx - 1
-  }
-
-  const appendMentionByIndex = (context: Context) => {
-    const {
-      state: {
-        currentOptions,
         prefix,
         suffix,
         value,
-        maxLength,
-        activeOptionIdx
+        maxLength
       },
       container,
       editor
     } = context
 
-    const item = currentOptions[activeOptionIdx]
-
     // 1. 清除输入内容
     const range = new Range()
     range.selectNode(container.querySelector<HTMLElement>(`.${DOM_CLASSES.AT}`)!)
     range.deleteContents()
+    const selection = window.getSelection()!
+    selection.removeAllRanges()
+    selection.addRange(range)
 
-    const oActiveMention = container.querySelector<HTMLElement>(`.${DOM_CLASSES.DROPDOWN_LIST_OPTION_ACTIVE}`)!
-
-    if (!oActiveMention.classList.contains(DOM_CLASSES.DROPDOWN_LIST_OPTION_DISABLED)) {
+    mentions.forEach(mention => {
       // 2. 插入 @Mention 内容块并让光标位置插入块之后
-      const oM = createMentionElement(item.name, item.id, prefix, suffix)
+      const oM = createMentionElement(mention.name, mention.id, prefix, suffix)
 
-      if (!(integerValidator(maxLength) && getValueLength(value) + computeMentionLength(item, context.state.getMentionLength) > maxLength)) {
+      if (!(integerValidator(maxLength) && getValueLength(value) + computeMentionLength(mention, context.state.getMentionLength) > maxLength)) {
         // 只允许在剩余长度足够的情况下插入 mention
         insertNodeAfterRange(oM)
       }
-    }
+    })
 
     // 3. 关闭 dropdown
-    context.eventHandler.close()
+    context.dropdown?.hide()
 
     // 4. 记录新的内容
     const newValue = valueFormatter(editor.innerHTML, context.state.formatter?.parser)
@@ -546,44 +360,15 @@ const createRenderer = (options: Required<MentionOptions>) => {
     selection.addRange(range)
   }
 
-  const fetchRemoteOptions = async (context: Context) => {
-    const {
-      optionsFetchApi,
-      immediate,
-      remoteOptions
-    } = context.state
-
-    if (
-      typeof optionsFetchApi === 'function' &&
-      !immediate &&
-      remoteOptions.length === 0
-    ) {
-      context.state.fetchLoading = true
-      context.state.remoteOptions = await optionsFetchApi().finally(() => {
-        context.state.fetchLoading = false
-      })
-
-      if (context.state.dropdownVisible) {
-        const oDropdown = context.container.querySelector<HTMLElement>(`.${DOM_CLASSES.DROPDOWN}`)!
-        oDropdown.style.cssText = ''
-        context.eventHandler.open()
-      }
-    }
-  }
-
   return {
     createElement,
     formatContent,
     renderMentionContent,
     renderFailureAt,
-    activateDropdown,
-    appendMentionByIndex,
-    initObserver,
-    switchActiveOption,
+    appendMentions,
     getMentionsByValueChange,
     recordState,
-    restoreState,
-    fetchRemoteOptions
+    restoreState
   }
 }
 

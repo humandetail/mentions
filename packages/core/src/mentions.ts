@@ -4,6 +4,7 @@ import { createEventHandler } from './libs/eventHandler'
 import { type MentionDropdownListOption, createRenderer } from './libs/renderer'
 import type { HTMLString, MentionConstructor } from './types'
 import { getValueLength, mergeOptions } from './utils'
+import { initDropdown } from './libs/dropdown'
 
 export interface Formatter {
   pattern: RegExp
@@ -45,15 +46,6 @@ export interface State extends Required<MentionOptions> {
   value: string
   get valueLength (): number
   record: Record
-  switchKey?: string
-
-  dropdownVisible: boolean
-  activeOptionIdx: number
-  filterValue: string
-  remoteOptions: MentionDropdownListOption[]
-  fetchLoading: boolean
-  get localOptions (): MentionDropdownListOption[]
-  get currentOptions (): MentionDropdownListOption[]
 
   currentMentions: MentionDropdownListOption[]
 }
@@ -62,6 +54,7 @@ export interface Context {
   state: State
   renderer: ReturnType<typeof createRenderer>
   eventHandler: ReturnType<typeof createEventHandler>
+  dropdown?: ReturnType<typeof initDropdown>
   container: HTMLElement
   editor: HTMLElement
   dropdownContainer: HTMLElement
@@ -84,10 +77,6 @@ export const createRecord = (
 })
 
 const createState = (options: Required<MentionOptions>): State => {
-  let fetchLoading = false
-  let activeOptionIdx = -1
-  let filterValue = ''
-
   return {
     ...options,
     value: options.value || options.initialValue || '',
@@ -95,50 +84,7 @@ const createState = (options: Required<MentionOptions>): State => {
       return getValueLength(this.value, options.formatter?.pattern, options.getMentionLength)
     },
 
-    dropdownVisible: false,
-    get activeOptionIdx () {
-      return activeOptionIdx
-    },
-    set activeOptionIdx (idx) {
-      activeOptionIdx = idx
-    },
-    get filterValue () {
-      return filterValue
-    },
-    set filterValue (value) {
-      filterValue = value
-    },
-    remoteOptions: [],
-    get fetchLoading () {
-      return fetchLoading
-    },
-    set fetchLoading (loading) {
-      fetchLoading = loading
-    },
-    get localOptions () {
-      const { optionsFetchApi, options, remoteOptions, labelFieldName, valueFieldName } = this
-
-      return (typeof optionsFetchApi === 'function' ? remoteOptions : options).map(option => ({
-        ...option,
-        name: option[labelFieldName as keyof MentionDropdownListOption] as string,
-        id: option[valueFieldName as keyof MentionDropdownListOption] as string
-      }))
-    },
-
-    get currentOptions () {
-      const { localOptions, filterValue, filterOption } = this
-      if (!filterValue) {
-        return localOptions
-      }
-
-      if (typeof filterOption === 'function') {
-        return localOptions.filter(option => filterOption(option, filterValue))
-      }
-      return localOptions.filter(option => option.name.toLowerCase().includes(filterValue.toLowerCase()))
-    },
-
     record: createRecord('', -1, -1, -1, -1),
-    switchKey: undefined,
 
     currentMentions: []
   }
@@ -166,23 +112,7 @@ const createMentions = (opts?: MentionOptions): MentionConstructor => {
     emitter: new EventEmitter()
   }
 
-  // 请不要在使用时解构 state，这样会丢失响应性
-  context.state = new Proxy(context.state, {
-    set (t, k, v, r) {
-      const res = Reflect.set(t, k, v, r)
-      if (['dropdownVisible', 'fetchLoading', 'activeOptionIdx', 'filterValue'].includes(k as string)) {
-        context.renderer.activateDropdown(context, k as string)
-      }
-      if (k === 'activeOptionIdx') {
-        if (t.dropdownVisible && context.intersectionObserver) {
-          // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-          document.body.offsetHeight
-          context.intersectionObserver.observe(document.querySelector(`.${DOM_CLASSES.DROPDOWN_LIST_OPTION}.${DOM_CLASSES.DROPDOWN_LIST_OPTION_ACTIVE}`)!)
-        }
-      }
-      return res
-    }
-  })
+  context.dropdown = initDropdown(context, options)
 
   const mentionsConstructor: MentionConstructor = {
     mount (el: string | HTMLElement) {
@@ -193,7 +123,6 @@ const createMentions = (opts?: MentionOptions): MentionConstructor => {
       root?.appendChild(oContainer)
       // 注册相关事件
       eventHandler.registerEvents(context)
-      renderer.initObserver(context)
     },
 
     destroy () {

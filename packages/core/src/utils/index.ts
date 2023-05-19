@@ -150,3 +150,7 @@ export const getValueLength = (value: string, pattern: RegExp = MENTION_REG, get
     )
   }, 0)
 }
+
+export const isEmptyArray = (arr: unknown) => !Array.isArray(arr) || arr.length === 0
+
+export const isFunction = (fn: unknown) => typeof fn === 'function'

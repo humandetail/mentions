@@ -8,23 +8,12 @@ const createEventHandler = () => {
     const { key } = e
     const {
       state: {
-        dropdownVisible,
         type
-      }
+      },
+      dropdown
     } = _context
 
-    if (dropdownVisible) {
-      if (['ArrowDown', 'ArrowUp'].includes(key)) {
-        e.preventDefault()
-        _context.state.switchKey = key
-        _context.renderer.switchActiveOption(_context)
-      } else if (['ArrowRight', 'ArrowLeft', 'Home', 'End'].includes(key)) {
-        close()
-      } else if (key === 'Enter') {
-        e.preventDefault()
-        _context.renderer.appendMentionByIndex(_context)
-      }
-    } else {
+    if (!dropdown?.visible) {
       if (key === 'Enter') {
         e.preventDefault()
         if (type === 'textarea') {
@@ -51,20 +40,21 @@ const createEventHandler = () => {
   }
 
   const handleClick = () => {
-    if (_context.state.dropdownVisible) {
-      close()
+    const { dropdown } = _context
+    if (dropdown?.visible) {
+      dropdown.hide(true)
     }
   }
 
   const handleScroll = () => {
     const {
       state: {
-        dropdownVisible,
         type
       },
+      dropdown,
       container
     } = _context
-    if (type !== 'textarea' || !dropdownVisible) {
+    if (type !== 'textarea' || !dropdown?.visible) {
       return
     }
 
@@ -84,41 +74,25 @@ const createEventHandler = () => {
   const handleBeforeInput = (e: Event) => {
     const {
       state: {
-        dropdownVisible,
         maxLength,
         prefix,
         formatter,
-        filterValue,
         getMentionLength
       }
     } = _context
 
-    const { data, inputType } = e as InputEvent
+    const { data } = e as InputEvent
     const target = e.target as HTMLElement
 
     const value = valueFormatter(target.innerHTML, formatter?.parser)
     const valueLength = getValueLength(value, formatter?.pattern, getMentionLength)
 
-    if (!dropdownVisible) {
-      _context.renderer.recordState(_context)
-    }
-
     if (integerValidator(maxLength) && valueLength + 1 > maxLength) {
       return
     }
 
-    // 在进行过滤时，不允许向后删除数据
-    if (
-      dropdownVisible &&
-      inputType === 'deleteContentForward' &&
-      !(window.getSelection()!.getRangeAt(0)!.startOffset - 1 === (filterValue?.length ?? 0))
-    ) {
-      e.preventDefault()
-      return
-    }
-
     // 输入 `@` 符号时，展开 Mentions 列表
-    if (data === prefix && !dropdownVisible) {
+    if (data === prefix) {
       e.preventDefault()
 
       const range = window.getSelection()!.getRangeAt(0)
@@ -128,41 +102,18 @@ const createEventHandler = () => {
       range.insertNode(oAt)
       setRangeAfterNode(oAt.firstChild!)
 
-      open()
+      show()
     }
   }
 
   const handleInput = (e: Event) => {
-    const { data, inputType } = e as InputEvent
     const {
       state: {
-        filterValue,
-        dropdownVisible,
         maxLength,
         formatter
       }
     } = _context
     const target = e.target as HTMLElement
-
-    // 当 Mentions 列表被展开时，后续输入所有字符都当成过滤字符
-    if (dropdownVisible) {
-      if (inputType === 'deleteContentBackward') {
-        if (filterValue) {
-          _context.state.filterValue = filterValue.slice(0, -1)
-        } else {
-          close()
-        }
-      } else {
-        _context.state.filterValue = !filterValue
-          ? data ?? ''
-          : `${filterValue}${data!}`
-
-        if (_context.state.currentOptions.length === 0) {
-          close()
-        }
-      }
-      return
-    }
 
     const value = valueFormatter(target.innerHTML, formatter?.parser)
 
@@ -214,54 +165,10 @@ const createEventHandler = () => {
     }
   }
 
-  const open = async () => {
-    _context.state.dropdownVisible = true
-    _context.emitter.emit('open')
-
-    // 默认选中第一个 options
-    const {
-      state: {
-        currentOptions,
-        dropdownMaxWidth,
-        dropdownMaxHeight
-      },
-      container
-    } = _context
-    if (currentOptions.length > 0) {
-      _context.state.activeOptionIdx = 0
-    }
-
-    const oContrast = container.querySelector<HTMLElement>(`.${DOM_CLASSES.AT}`)!
-    const oDropdown = container.querySelector<HTMLElement>(`.${DOM_CLASSES.DROPDOWN}`)!
-
-    const rect = computePosition(oContrast, oDropdown)
-
-    Object.assign(oDropdown.style, {
-      left: `${rect.x}px`,
-      top: `${rect.y}px`,
-      maxWidth: `${typeof dropdownMaxWidth === 'number' ? dropdownMaxWidth : rect.availableWidth}px`,
-      maxHeight: `${typeof dropdownMaxHeight === 'number' ? dropdownMaxHeight : rect.availableHeight}px`,
-      width: `${rect.availableWidth}px`,
-      height: `${rect.availableHeight}px`
-    })
-
-    // Keep the order of execution
-    _context.renderer.fetchRemoteOptions(_context)
-  }
-
-  const close = () => {
-    _context.state.filterValue = ''
-    _context.state.dropdownVisible = false
-
-    const { container, renderer } = _context
-
-    const oAt = container.querySelector<HTMLElement>(`.${DOM_CLASSES.AT}`)
-
-    if (oAt) {
-      renderer.renderFailureAt(oAt, _context)
-    }
-
-    _context.emitter.emit('close')
+  const show = async () => {
+    _context.renderer.recordState(_context)
+    _context.dropdown?.show()
+    _context.emitter.emit('show')
   }
 
   const handleFocus = (e: Event) => {
@@ -272,50 +179,6 @@ const createEventHandler = () => {
   const handleBlur = (e: Event) => {
     const target = e.target as HTMLElement
     target.classList.remove(DOM_CLASSES.FOCUSED)
-  }
-
-  const handleDropdownListOptionMouseenter = (e: Event) => {
-    const target = e.target as HTMLElement
-    const { dropdownContainer } = _context
-
-    const oList = dropdownContainer.firstElementChild as HTMLElement
-    if (!oList || !target) {
-      return
-    }
-    let index = 0
-    ;[...oList.children as unknown as HTMLElement[]].some((child, idx) => {
-      if (child.contains(target)) {
-        index = idx
-        return true
-      }
-
-      return false
-    })
-
-    _context.state.activeOptionIdx = index
-  }
-
-  const handleDropdownListOptionMousedown = (e: Event) => {
-    e.preventDefault()
-    const target = e.target as HTMLElement
-    const { dropdownContainer } = _context
-
-    const oList = dropdownContainer.firstElementChild as HTMLElement
-    if (!oList || !target) {
-      return
-    }
-    let index = 0
-    ;[...oList.children as unknown as HTMLElement[]].some((child, idx) => {
-      if (child.contains(target)) {
-        index = idx
-        return true
-      }
-
-      return false
-    })
-
-    _context.state.activeOptionIdx = index
-    _context.renderer.appendMentionByIndex(_context)
   }
 
   const registerEvents = (context: Context) => {
@@ -345,11 +208,7 @@ const createEventHandler = () => {
 
   return {
     registerEvents,
-    cancelEvents,
-    handleDropdownListOptionMouseenter,
-    handleDropdownListOptionMousedown,
-    open,
-    close
+    cancelEvents
   }
 }
 
