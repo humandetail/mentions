@@ -71,7 +71,7 @@ const createEventHandler = () => {
     })
   }
 
-  const handleBeforeInput = (e: Event) => {
+  const handleBeforeInput = (e: InputEvent) => {
     const {
       state: {
         maxLength,
@@ -81,7 +81,7 @@ const createEventHandler = () => {
       }
     } = _context
 
-    const { data } = e as InputEvent
+    const { data } = e
     const target = e.target as HTMLElement
 
     const value = valueFormatter(target.innerHTML, formatter?.parser)
@@ -95,13 +95,27 @@ const createEventHandler = () => {
     if (data === prefix) {
       e.preventDefault()
 
-      const range = window.getSelection()!.getRangeAt(0)
+      // 防止重复插入 @ 符号
+      // 在 windows 上使用输入法组合输入时，会触发两次 beforeinput 事件，这会导致多次插入 @ 符号
+      if (_context.container.querySelector(`.${DOM_CLASSES.AT}`)) {
+        return
+      }
 
+      // 强行修正 @ 里的内容，将多个 @ 合并成一个
+      setTimeout(() => {
+        if (_context.dropdown?.visible) {
+          const oAt = _context.container.querySelector(`.${DOM_CLASSES.AT}`)
+          if (oAt) {
+            oAt.textContent = prefix
+          }
+        }
+      })
+
+      const range = window.getSelection()!.getRangeAt(0)
       const oAt = createAtElement(prefix)
 
       range.insertNode(oAt)
       setRangeAfterNode(oAt.firstChild!)
-
       show()
     }
   }
@@ -184,6 +198,9 @@ const createEventHandler = () => {
   const registerEvents = (context: Context) => {
     _context = context
     const { editor } = context
+
+    // editor.addEventListener('keydown', (e) => { e.preventDefault(); console.log(e) })
+    // editor.addEventListener('keydown', (e) => { e.preventDefault(); console.log(e) })
 
     editor.addEventListener('beforeinput', handleBeforeInput)
     editor.addEventListener('input', handleInput)
