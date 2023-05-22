@@ -29,6 +29,11 @@ module.exports = {
         '@typescript-eslint/strict-boolean-expressions': 'off',
         '@typescript-eslint/explicit-function-return-type': 'off'
       }
+    },
+    {
+      files: ['*.vue'],
+      extends: ['plugin:vue/vue3-recommended'],
+      plugins: ['vue']
     }
   ],
 
