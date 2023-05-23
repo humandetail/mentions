@@ -8,7 +8,7 @@
     ".": {
       "import": "./dist/mentions.js"
     },
-    "./mentions.css": "./dist/assets/style.css"
+    "./mentions.css": "./dist/mentions.css"
   },
   "files": [
     "dist/*"
@@ -23,7 +23,11 @@
   "devDependencies": {
     "@vitest/coverage-c8": "^0.31.0",
     "happy-dom": "^9.18.3",
-    "vite": "^4.3.8",
-    "vitest": "^0.31.0"
+    "postcss": "^8.4.23",
+    "rollup-plugin-postcss": "^4.0.2",
+    "typescript": "^5.0.4",
+    "vite": "^4.2.0",
+    "vite-plugin-dts": "^2.3.0",
+    "vitest": "^0.31.1"
   }
 }

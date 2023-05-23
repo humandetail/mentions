@@ -95,13 +95,10 @@ const createEventHandler = () => {
     if (data === prefix) {
       e.preventDefault()
 
-      // 防止重复插入 @ 符号
-      // 在 windows 上使用输入法组合输入时，会触发两次 beforeinput 事件，这会导致多次插入 @ 符号
       if (_context.container.querySelector(`.${DOM_CLASSES.AT}`)) {
         return
       }
 
-      // 强行修正 @ 里的内容，将多个 @ 合并成一个
       setTimeout(() => {
         if (_context.dropdown?.visible) {
           const oAt = _context.container.querySelector(`.${DOM_CLASSES.AT}`)
@@ -180,6 +177,9 @@ const createEventHandler = () => {
   }
 
   const show = async () => {
+    // 让 editor 失焦，防止在 options 列表为空时，焦点无法正确聚焦到 dropdown 里面的 input 中
+    // 从而导致焦点仍然停留在 editor 上面，在进行输入时会引发未知的问题
+    _context.editor.blur()
     _context.renderer.recordState(_context)
     _context.dropdown?.show()
     _context.emitter.emit('show')

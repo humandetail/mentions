@@ -110,8 +110,8 @@ const createRenderer = (options: Required<MentionOptions>) => {
     const focusIdxDiff = (focusNodeIsEditor ? focusOffset : focusNodeIdx) - oAtIndex
 
     // 记录左右 Node 类型
-    const prevNodeType = prevNode.nodeType
-    const nextNodeType = nextNode.nodeType
+    const prevNodeType = prevNode?.nodeType
+    const nextNodeType = nextNode?.nodeType
     // 记录 Node 内容长度
     const prevNodeValueLength: number = prevNode?.nodeValue?.length ?? 0
     const textNodeValueLength: number = (oAt.firstChild as Text)?.length ?? 0

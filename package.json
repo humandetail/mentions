@@ -6,6 +6,7 @@
   "scripts": {
     "dev:core": "pnpm --filter ./packages/core build --watch",
     "dev:example": "pnpm --filter ./packages/example dev",
+    "dev:vue": "concurrently \"pnpm run dev:core\" \"pnpm --filter ./packages/vue dev\"",
     "dev": "concurrently \"pnpm run dev:core\" \"pnpm run dev:example\"",
     "build": "pnpm --filter ./packages/core build",
     "prepare": "husky install",
