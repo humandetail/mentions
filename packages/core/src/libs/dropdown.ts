@@ -149,6 +149,10 @@ const initDropdown = (context: Context, options: MentionOptions) => {
     initObserver()
   }
 
+  const setOptions = (options: MentionDropdownListOption[]) => {
+    dropdownState.options = options
+  }
+
   // 展开
   const show = () => {
     // 每次打开都需要初始化数据
@@ -553,6 +557,7 @@ const initDropdown = (context: Context, options: MentionOptions) => {
   return {
     show,
     hide,
+    setOptions,
     get visible () {
       return dropdownState.visible
     }

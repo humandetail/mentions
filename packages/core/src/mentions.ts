@@ -3,7 +3,7 @@ import { DOM_CLASSES } from './config'
 import { createEventHandler } from './libs/eventHandler'
 import { type MentionDropdownListOption, createRenderer } from './libs/renderer'
 import type { HTMLString, MentionConstructor } from './types'
-import { getValueLength, mergeOptions } from './utils'
+import { fitValue, getValueLength, mergeOptions } from './utils'
 import { initDropdown } from './libs/dropdown'
 export interface Formatter {
   pattern: RegExp
@@ -131,6 +131,34 @@ const createMentions = (opts?: MentionOptions): MentionConstructor => {
     destroy () {
       oContainer.remove()
       eventHandler.cancelEvents(context)
+    },
+
+    set (key, value) {
+      let val: string
+      switch (key) {
+        case 'value':
+          val = fitValue(value as string, options.maxLength)!
+
+          context.renderer.handleValueChange(context, val)
+          context.state.value = val
+          oEditor.innerHTML = context.renderer.formatContent(val)
+          break
+        case 'options':
+          context.state.options = value as MentionDropdownListOption[]
+          context.dropdown?.setOptions(value as MentionDropdownListOption[])
+          break
+        case 'max-length':
+          context.state.maxLength = value as number
+          val = fitValue(context.state.value, value as number)!
+
+          context.renderer.handleValueChange(context, val)
+          context.state.value = val
+          oEditor.innerHTML = context.renderer.formatContent(val)
+          break
+        default:
+          break
+      }
+      return mentionsConstructor
     },
 
     on: (type, cb) => {

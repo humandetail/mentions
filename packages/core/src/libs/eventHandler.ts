@@ -189,6 +189,9 @@ const createEventHandler = () => {
   const handleFocus = (e: Event) => {
     const target = e.target as HTMLElement
     target.classList.add(DOM_CLASSES.FOCUSED)
+    setTimeout(() => {
+      _context.renderer.recordState(_context)
+    })
   }
 
   const handleBlur = (e: Event) => {

@@ -23,7 +23,8 @@ onMounted(() => {
       { id: '6', name: '孙 八' },
       { id: '7', name: '金 九' },
       { id: '8', name: '银 十' }
-    ]
+    ],
+    maxLength: 30
     // optionsFetchApi: () => {
     //   return new Promise(resolve => {
     //     setTimeout(() => {
@@ -41,6 +42,14 @@ onMounted(() => {
     //   })
     // }
   })
+
+  // setTimeout(() => {
+  //   editor.set('value', 'Hello world\n你好啊')
+  //     .set('options', [
+  //       { id: '1', name: '张三' }
+  //     ])
+  //     .set('max-length', 10)
+  // }, 3000)
 
   editor
     .on('change', (newVal, oldVal) => {

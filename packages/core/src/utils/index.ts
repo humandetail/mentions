@@ -6,8 +6,20 @@ import { type HTMLString } from '../types'
 export const mergeOptions = <T extends MentionOptions>(options?: T): Required<T> => {
   return {
     ...initialOptions,
-    ...options
+    ...options,
+    value: fitValue(options?.value, options?.maxLength)
   } as unknown as Required<T>
+}
+
+export const fitValue = (value?: string, maxLength?: number) => {
+  if (
+    integerValidator(maxLength ?? 0) &&
+    value &&
+    (maxLength! < getValueLength(value))
+  ) {
+    value = value.slice(0, maxLength)
+  }
+  return value
 }
 
 export const computePosition = (contrastElement: HTMLElement, targetElement: HTMLElement) => {

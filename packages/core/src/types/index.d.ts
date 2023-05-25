@@ -1,4 +1,4 @@
-// import type { MentionDropdownListOption } from '../libs/renderer'
+import type { MentionDropdownListOption } from '../libs/renderer'
 
 type UppercaseType<T extends string> = T extends `${infer F}-${infer L}`
   ? `${Uppercase<F>}_${UppercaseType<L>}`
@@ -29,6 +29,11 @@ interface Listener {
 export interface MentionConstructor {
   mount: (el: string | HTMLElement) => void
   destroy: Noop
+  set: {
+    (key: 'value', value: string): MentionConstructor
+    (key: 'options', value: MentionDropdownListOption[]): MentionConstructor
+    (key: 'max-length', value: number): MentionConstructor
+  }
   on: Listener
   once: Listener
   off: Listener

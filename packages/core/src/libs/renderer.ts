@@ -219,9 +219,7 @@ const createRenderer = (options: Required<MentionOptions>) => {
 
     // 4. 记录新的内容
     const newValue = valueFormatter(editor.innerHTML, context.state.formatter?.parser)
-    // context.emitter.emit('change', newValue, context.state.value)
-    // context.state.value = newValue
-    // getMentionsByValueChange(context)
+
     handleValueChange(context, newValue)
   }
 
@@ -229,6 +227,7 @@ const createRenderer = (options: Required<MentionOptions>) => {
     context.emitter.emit('change', newValue, isFirstChange ? undefined : context.state.value)
     context.state.value = newValue
     setMentionsByValueChange(context)
+    recordState(context)
   }
 
   const setMentionsByValueChange = (context: Context) => {
@@ -249,6 +248,11 @@ const createRenderer = (options: Required<MentionOptions>) => {
         const option = options.find(i => i.id === m[2])
         if (option) {
           currentMentions.push(option)
+        } else {
+          currentMentions.push({
+            id: m[2],
+            name: m[1]
+          })
         }
       }
     })
@@ -342,6 +346,7 @@ const createRenderer = (options: Required<MentionOptions>) => {
     const range = new Range()
 
     let anchorNode = childNodes[anchorNodeIdx]
+
     if (anchorNode?.nodeType !== 3) {
       anchorNode = target
       if (anchorOffset === childNodes.length - 1) {
@@ -374,7 +379,6 @@ const createRenderer = (options: Required<MentionOptions>) => {
     renderFailureAt,
     appendMentions,
     handleValueChange,
-    // getMentionsByValueChange,
     recordState,
     restoreState
   }
