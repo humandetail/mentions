@@ -134,9 +134,10 @@ const createEventHandler = () => {
       return
     }
 
-    _context.state.value = value
-    _context.renderer.getMentionsByValueChange(_context)
-    _context.emitter.emit('change', value)
+    _context.renderer.handleValueChange(_context, value)
+    // _context.emitter.emit('change', value, _context.state.value)
+    // _context.state.value = value
+    // _context.renderer.getMentionsByValueChange(_context)
   }
 
   const handleMousedown = () => {
@@ -198,9 +199,6 @@ const createEventHandler = () => {
   const registerEvents = (context: Context) => {
     _context = context
     const { editor } = context
-
-    // editor.addEventListener('keydown', (e) => { e.preventDefault(); console.log(e) })
-    // editor.addEventListener('keydown', (e) => { e.preventDefault(); console.log(e) })
 
     editor.addEventListener('beforeinput', handleBeforeInput)
     editor.addEventListener('input', handleInput)

@@ -1,6 +1,6 @@
 import { DOM_CLASSES, MENTION_REG } from '../config'
 import type { Context, MentionOptions } from '../mentions'
-import { computeMentionLength, createMentionElement, getValueLength, insertNodeAfterRange, integerValidator, isEmptyTextNode, valueFormatter } from '../utils'
+import { computeMentionLength, createMentionElement, getMentionPattern, getValueLength, insertNodeAfterRange, integerValidator, isEmptyTextNode, valueFormatter } from '../utils'
 
 export interface MentionDropdownListOption {
   name: string
@@ -47,12 +47,12 @@ const createRenderer = (options: Required<MentionOptions>) => {
   const formatContent = (val: string) => {
     const { formatter } = options
 
-    const reg = formatter?.pattern ?? MENTION_REG
+    const reg = getMentionPattern(formatter?.pattern ?? MENTION_REG)
 
-    return val.replace(/\n/g, '<br />').replace(reg, (_, name: string, id: string) => {
+    return val.replace(/\n/g, '<br />').replace(reg.global, (_, name: string, id: string) => {
       return `<em
         class="${DOM_CLASSES.MENTION}"
-        data-id=${id}"
+        data-id="${id}"
         data-name="${name}"
         contenteditable="false"
       >${renderMentionContent(id, name)}</em>`
@@ -219,34 +219,41 @@ const createRenderer = (options: Required<MentionOptions>) => {
 
     // 4. 记录新的内容
     const newValue = valueFormatter(editor.innerHTML, context.state.formatter?.parser)
-    context.state.value = newValue
-    getMentionsByValueChange(context)
-    context.emitter.emit('change', newValue)
+    // context.emitter.emit('change', newValue, context.state.value)
+    // context.state.value = newValue
+    // getMentionsByValueChange(context)
+    handleValueChange(context, newValue)
   }
 
-  const getMentionsByValueChange = (context: Context) => {
-    let {
-      value: val,
-      formatter
+  const handleValueChange = (context: Context, newValue: string, isFirstChange = false) => {
+    context.emitter.emit('change', newValue, isFirstChange ? undefined : context.state.value)
+    context.state.value = newValue
+    setMentionsByValueChange(context)
+  }
+
+  const setMentionsByValueChange = (context: Context) => {
+    const {
+      value,
+      formatter,
+      options
     } = context.state
 
-    let match
+    const reg = getMentionPattern(formatter?.pattern ?? MENTION_REG)
 
-    const reg = formatter?.pattern ?? MENTION_REG
+    const currentMentions: MentionDropdownListOption[] = []
+    const match = value.match(reg.global)
 
-    const currentMentions = []
-    while (val?.length) {
-      match = val.match(reg)
-      if (!match) {
-        val = val.slice(1)
-      } else {
-        currentMentions.push({
-          name: match[1],
-          id: match[2]
-        })
-        val = val.replace(reg, '')
+    match?.forEach(val => {
+      const m = val.match(reg.single)
+      if (m) {
+        const option = options.find(i => i.id === m[2])
+        if (option) {
+          currentMentions.push(option)
+        }
       }
-    }
+    })
+
+    context.emitter.emit('mentions-change', currentMentions, context.state.currentMentions)
     context.state.currentMentions = currentMentions
   }
 
@@ -366,7 +373,8 @@ const createRenderer = (options: Required<MentionOptions>) => {
     renderMentionContent,
     renderFailureAt,
     appendMentions,
-    getMentionsByValueChange,
+    handleValueChange,
+    // getMentionsByValueChange,
     recordState,
     restoreState
   }

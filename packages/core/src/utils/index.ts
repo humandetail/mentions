@@ -108,6 +108,7 @@ export function integerValidator (value: number) {
 
 export const valueFormatter = (innerHTML: HTMLString, parser?: (id: string, name: string) => string) => {
   const oDiv = document.createElement('div')
+
   oDiv.innerHTML = innerHTML
     .replace(/(<(?:br)[^>]*>)/ig, '\n')
     .replace(

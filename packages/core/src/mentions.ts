@@ -5,7 +5,6 @@ import { type MentionDropdownListOption, createRenderer } from './libs/renderer'
 import type { HTMLString, MentionConstructor } from './types'
 import { getValueLength, mergeOptions } from './utils'
 import { initDropdown } from './libs/dropdown'
-
 export interface Formatter {
   pattern: RegExp
   render: ((id: string, name: string) => HTMLString)
@@ -121,6 +120,10 @@ const createMentions = (opts?: MentionOptions): MentionConstructor => {
         : el
 
       root?.appendChild(oContainer)
+
+      // 触发首次 value change 事件
+      context.renderer.handleValueChange(context, context.state.value, true)
+
       // 注册相关事件
       eventHandler.registerEvents(context)
     },

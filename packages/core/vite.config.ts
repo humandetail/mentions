@@ -4,7 +4,9 @@ import postcss from 'rollup-plugin-postcss'
 
 export default defineConfig({
   plugins: [
-    dts(),
+    dts({
+      copyDtsFiles: true
+    }),
     postcss({
       extract: true,
       minimize: true,
@@ -13,7 +15,7 @@ export default defineConfig({
   ],
   build: {
     lib: {
-      entry: './index.ts',
+      entry: './src/index.ts',
       name: 'mentions',
       fileName: 'mentions'
     },
