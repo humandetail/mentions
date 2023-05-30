@@ -3,8 +3,8 @@
 layout: home
 
 hero:
-  name: "VueMentions"
-  text: "A vue-mentions documention"
+  name: "@mentions/vanilla"
+  text: "@mentions/vanilla documentation"
   # tagline: My great project tagline
   actions:
     - theme: brand

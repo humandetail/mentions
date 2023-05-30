@@ -2,8 +2,8 @@ import { defineConfig } from 'vitepress'
 
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
-  title: "VueMentions",
-  description: "A vue-mentions documention",
+  title: "@mentions/vanilla",
+  description: "@mentions/vanilla documentation",
   themeConfig: {
     // https://vitepress.dev/reference/default-theme-config
     nav: [
