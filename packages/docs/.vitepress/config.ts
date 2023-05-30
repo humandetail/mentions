@@ -2,6 +2,7 @@ import { defineConfig } from 'vitepress'
 
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
+  base: '/mentions/',
   title: "@mentions/vanilla",
   description: "@mentions/vanilla documentation",
   themeConfig: {
