@@ -37,14 +37,14 @@ jobs:
       - name: Build @mentions/vanilla
         run: pwd && pnpm i && pnpm run build
       - name: Build docs
-        run: cd ./packages/docs && pnpm install && pnpm run build
+        run: pwd && pnpm --filter ./packages/docs i && pnpm run build:docs
       - name: Setup Pages
         uses: actions/configure-pages@v2
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v1
         with:
           # Upload entire repository
-          path: './packages/docs/dist'
+          path: './packages/docs/.vitepress/dist'
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v1
