@@ -1,0 +1,19 @@
+{
+  "private": true,
+  "scripts": {
+    "dev": "vitepress dev",
+    "build": "vitepress build",
+    "preview": "vitepress preview"
+  },
+  "pnpm": {
+    "peerDependencyRules": {
+      "ignoreMissing": [
+        "@algolia/client-search"
+      ]
+    }
+  },
+  "devDependencies": {
+    "vitepress": "^1.0.0-beta.1",
+    "vue": "^3.2.47"
+  }
+}

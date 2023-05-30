@@ -4,11 +4,14 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
+    "dev:docs": "pnpm --filter ./packages/docs dev",
     "dev:core": "pnpm --filter ./packages/core build --watch",
     "dev:example": "pnpm --filter ./packages/example dev",
     "dev:vue": "concurrently \"pnpm run dev:core\" \"pnpm --filter ./packages/vue dev\"",
     "dev": "concurrently \"pnpm run dev:core\" \"pnpm run dev:example\"",
     "build": "pnpm --filter ./packages/core build",
+    "build:docs": "pnpm --filter ./packages/docs build",
+    "preview:docs": "pnpm --filter ./packages/docs preview",
     "prepare": "husky install",
     "test:core": "pnpm --filter ./packages/core test",
     "test:coverage:core": "pnpm --filter ./packages/core coverage"
