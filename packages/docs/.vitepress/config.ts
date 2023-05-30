@@ -3,8 +3,8 @@ import { defineConfig } from 'vitepress'
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
   base: '/mentions/',
-  title: "@mentions/vanilla",
-  description: "@mentions/vanilla documentation",
+  title: "mentions.js",
+  description: "A mentions input base on vanilla JS.",
   themeConfig: {
     // https://vitepress.dev/reference/default-theme-config
     nav: [

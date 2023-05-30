@@ -8,8 +8,8 @@
 
 <script setup lang="ts">
 import { onMounted } from 'vue'
-import { createMentions } from '@mentions/vanilla'
-import '@mentions/vanilla/mentions.css'
+import { createMentions } from 'mentions.js'
+import 'mentions.js/mentions.css'
 
 onMounted(() => {
   const editor = createMentions({

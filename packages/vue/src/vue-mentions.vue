@@ -5,8 +5,8 @@
 </template>
 
 <script>
-import { createMentions } from '@mentions/vanilla'
-import '@mentions/vanilla/mentions.css'
+import { createMentions } from 'mentions.js'
+import 'mentions.js/mentions.css'
 
 export default {
   name: 'VueMentions',

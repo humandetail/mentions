@@ -9,7 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@mentions/vanilla": "workspace:^0.0.1",
+    "mentions.js": "workspace:^0.0.1",
     "vue": "^3.2.47"
   },
   "devDependencies": {

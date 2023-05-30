@@ -3,8 +3,8 @@
 layout: home
 
 hero:
-  name: "@mentions/vanilla"
-  text: "@mentions/vanilla documentation"
+  name: "mentions.js"
+  text: "A mentions input base on vanilla JS."
   # tagline: My great project tagline
   actions:
     - theme: brand

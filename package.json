@@ -14,7 +14,8 @@
     "preview:docs": "pnpm --filter ./packages/docs preview",
     "prepare": "husky install",
     "test:core": "pnpm --filter ./packages/core test",
-    "test:coverage:core": "pnpm --filter ./packages/core coverage"
+    "test:coverage:core": "pnpm --filter ./packages/core coverage",
+    "release": "pnpm --filter ./packages/core release"
   },
   "devDependencies": {
     "@commitlint/cli": "^17.6.3",

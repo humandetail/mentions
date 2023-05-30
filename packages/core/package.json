@@ -1,9 +1,20 @@
 {
-  "name": "@mentions/vanilla",
+  "name": "mentions.js",
   "private": false,
   "version": "0.0.1",
+  "keywords": [
+    "mentions",
+    "vanilla",
+    "js",
+    "ui",
+    "vue",
+    "react"
+  ],
+  "description": "@mentions @vue @react @vanilla",
   "type": "module",
   "main": "dist/mentions.js",
+  "browser": "dist/mentions.js",
+  "module": "dist/mentions.js",
   "exports": {
     ".": {
       "import": "./dist/mentions.js"
@@ -13,17 +24,31 @@
   "files": [
     "dist/*"
   ],
+  "unpkg": "dist/mentions.js",
+  "jsdelivr": "dist/mentions.js",
+  "homepage": "https://github.com/humandetail/mentions",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/humandetail/mentions"
+  },
+  "bugs": {
+    "url": "https://github.com/humandetail/mentions/issues"
+  },
+  "license": "MIT",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview",
     "test": "vitest",
-    "coverage": "vitest run --coverage"
+    "coverage": "vitest run --coverage",
+    "release": "release-it"
   },
   "devDependencies": {
+    "@release-it/conventional-changelog": "^5.1.1",
     "@vitest/coverage-c8": "^0.31.0",
     "happy-dom": "^9.18.3",
     "postcss": "^8.4.23",
+    "release-it": "^15.10.3",
     "rollup-plugin-postcss": "^4.0.2",
     "typescript": "^5.0.4",
     "vite": "^4.2.0",
