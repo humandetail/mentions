@@ -1,3 +1,3 @@
 # vue-mentions
 
-@vue @metions
+@vue @mentions

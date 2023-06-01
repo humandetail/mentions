@@ -33,7 +33,11 @@ module.exports = {
     {
       files: ['*.vue'],
       extends: ['plugin:vue/vue3-recommended'],
-      plugins: ['vue']
+      plugins: ['vue'],
+
+      rules: {
+        'vue/multi-word-component-names': 'off'
+      }
     }
   ],
 
