@@ -187,6 +187,9 @@ const initDropdown = (context: Context, options: MentionOptions) => {
       } else {
         oInput?.removeAttribute('disabled')
         oInput?.focus()
+        setTimeout(() => {
+          oInput && (oInput.value = '')
+        }, 0)
       }
     }
 
