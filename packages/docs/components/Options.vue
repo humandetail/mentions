@@ -1,6 +1,11 @@
 <template>
-  <details open class="options">
-    <summary class="title">参数设置</summary>
+  <details
+    open
+    class="options"
+  >
+    <summary class="title">
+      参数设置
+    </summary>
     <form class="form">
       <div
         v-for="item of formItems"
@@ -14,15 +19,15 @@
         <div class="value">
           <input
             v-if="['input', 'input-number'].includes(item.type)"
-            :type="item.type === 'input' ? 'text' : 'number'"
             v-model="mentionOptions[item.name]"
-          />
+            :type="item.type === 'input' ? 'text' : 'number'"
+          >
 
           <input
             v-else-if="item.type === 'checkbox'"
-            type="checkbox"
             v-model="mentionOptions[item.name]"
-          />
+            type="checkbox"
+          >
 
           <select
             v-else-if="item.type === 'select'"
@@ -40,15 +45,25 @@
       </div>
 
       <dl class="dropdown-options">
-        <dt class="title">提及列表</dt>
+        <dt class="title">
+          提及列表
+        </dt>
         <dd>
           <table width="100%">
             <thead>
               <tr>
-                <th width="10%">-</th>
-                <th width="30%">{{ mentionOptions.valueFieldName }}</th>
-                <th width="30%">{{ mentionOptions.labelFieldName }}</th>
-                <th width="10%">操作</th>
+                <th width="10%">
+                  -
+                </th>
+                <th width="30%">
+                  {{ mentionOptions.valueFieldName }}
+                </th>
+                <th width="30%">
+                  {{ mentionOptions.labelFieldName }}
+                </th>
+                <th width="10%">
+                  操作
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -61,22 +76,23 @@
                   <input
                     :value="row.id"
                     @change="handleTableInputChange(row.id, 'id', $event)"
-                  />
+                  >
                 </td>
                 <td>
                   <input
                     :value="row.name"
                     @change="handleTableInputChange(row.id, 'name', $event)"
-                  />  
+                  >
                 </td>
                 <td>
                   <a
-                    href="#"
+                    href="javascript:;"
                     class="table-link danger"
+                    title="移除当前行"
                     @click="removeRow(row)"
                   >
                     -
-                  </a>  
+                  </a>
                 </td>
               </tr>
             </tbody>
@@ -84,8 +100,9 @@
               <tr>
                 <td colspan="4">
                   <a
-                    href="#"
+                    href="javascript:;"
                     class="table-link"
+                    title="增加一行"
                     @click="addRow"
                   >
                     +
@@ -100,17 +117,12 @@
   </details>
 </template>
 
-<script setup lang="ts">
+<script setup>
 import { ref, watch } from 'vue'
-import { MentionOptions } from 'mentions.js'
-import { MentionDropdownListOption } from 'mentions.js/dist/libs/renderer'
 
-const emits = defineEmits<{
-  ('update:mention-options', value: MentionOptions): void
-  ('update:draodown-options', value: MentionOptions): void
-}>()
+const emits = defineEmits(['change'])
 
-const mentionOptions = ref<MentionOptions>({
+const mentionOptions = ref({
   type: 'input',
   value: '',
   initialValue: '',
@@ -131,7 +143,7 @@ const mentionOptions = ref<MentionOptions>({
   dropdownMaxHeight: 200
 })
 
-const dropdownOptions = ref<MentionDropdownListOption[]>([
+const dropdownOptions = ref([
   { id: '1', name: 'John' },
   { id: '2', name: 'Jack' },
   { id: '3', name: 'Tom' },
@@ -151,7 +163,7 @@ const formItems = [
   {
     name: 'value',
     type: 'input',
-    label: '内容',
+    label: '内容'
   },
   {
     name: 'initialValue',
@@ -206,11 +218,11 @@ const formItems = [
 ]
 
 watch([mentionOptions, dropdownOptions], () => {
-  emits('update:mention-options', mentionOptions.value)
-  emits('update:dropdown-options', dropdownOptions.value)
-})
+  console.log('change?', mentionOptions.value, dropdownOptions.value)
+  emits('change', mentionOptions.value, dropdownOptions.value)
+}, { immediate: true, deep: true })
 
-const removeRow = (row: MentionDropdownListOption) => {
+const removeRow = (row) => {
   dropdownOptions.value = dropdownOptions.value.filter(item => item.id !== row.id)
 }
 
@@ -221,8 +233,8 @@ const addRow = () => {
   })
 }
 
-const handleTableInputChange = (id: string, fieldName: 'id' | 'name', e: Event) => {
-  const value = (e.target as HTMLInputElement).value
+const handleTableInputChange = (id, fieldName, e) => {
+  const value = e.target.value
 
   const row = dropdownOptions.value.find(item => item.id === id)
 
@@ -285,6 +297,7 @@ dd {
   text-align: center;
   line-height: 24px;
   font-size: 24px;
+  text-decoration: none;
 }
 
 .table-link.danger {
