@@ -7,7 +7,7 @@ export const mergeOptions = <T extends MentionOptions>(options?: T): Required<T>
   return {
     ...initialOptions,
     ...options,
-    value: fitValue(options?.value, options?.maxLength)
+    value: fitValue(options?.value ?? '', options?.maxLength)
   } as unknown as Required<T>
 }
 
