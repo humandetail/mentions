@@ -2,6 +2,8 @@
 
 @vanilla @mentions
 
+[中文文档](https://github.com/humandetail/mentions/blob/main/README-zh_CN.md)
+
 ## Introduction
 
 This project aims to create an Input box simulated by div elements, enabling users to conveniently mention other users or entities within text.

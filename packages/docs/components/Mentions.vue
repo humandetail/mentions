@@ -1,6 +1,8 @@
 <template>
   <div>
     <Options
+      :old-mention-options="mentionOptions"
+      :old-dropdown-options="dropdownOptions"
       @change="handleChange"
     />
 
@@ -61,12 +63,26 @@ onMounted(() => {
 })
 
 const handleChange = (mOptions, dOptions) => {
-  dropdownOptions.value = dOptions.filter(item => item.id && item.name)
+  console.log({
+    mOptions,
+    dOptions
+  })
+
+  const { labelFieldName, valueFieldName } = mentionOptions.value
+  dropdownOptions.value = dOptions.filter(item => item[labelFieldName] && item[valueFieldName])
+    .map(item => {
+      return {
+        [mOptions.labelFieldName]: item[labelFieldName],
+        [mOptions.valueFieldName]: item[valueFieldName]
+      }
+    })
 
   mentionOptions.value = {
     ...mOptions,
     options: dropdownOptions.value
   }
+
+  console.log(mentionOptions.value)
 
   if (mentions) {
     mentions.destroy()

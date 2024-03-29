@@ -69,19 +69,19 @@
             <tbody>
               <tr
                 v-for="(row, index) of dropdownOptions"
-                :key="`${row.id}-${index}`"
+                :key="`${row[oldMentionOptions.valueFieldName]}-${index}`"
               >
                 <td>{{ index + 1 }}</td>
                 <td>
                   <input
-                    :value="row.id"
-                    @change="handleTableInputChange(row.id, 'id', $event)"
+                    :value="row[oldMentionOptions.valueFieldName]"
+                    @change="handleTableInputChange(row[oldMentionOptions.valueFieldName], oldMentionOptions.valueFieldName, $event)"
                   >
                 </td>
                 <td>
                   <input
-                    :value="row.name"
-                    @change="handleTableInputChange(row.id, 'name', $event)"
+                    :value="row[oldMentionOptions.labelFieldName]"
+                    @change="handleTableInputChange(row[oldMentionOptions.valueFieldName], oldMentionOptions.labelFieldName, $event)"
                   >
                 </td>
                 <td>
@@ -113,6 +113,19 @@
           </table>
         </dd>
       </dl>
+
+      <div
+        class="form-item"
+        style="width: 100%;"
+      >
+        <button
+          type="button"
+          class="btn-confirm"
+          @click="handleSubmit"
+        >
+          保存
+        </button>
+      </div>
     </form>
   </details>
 </template>
@@ -120,6 +133,16 @@
 <script setup>
 import { ref, watch } from 'vue'
 
+const props = defineProps({
+  oldMentionOptions: {
+    type: Object,
+    default: Object
+  },
+  oldDropdownOptions: {
+    type: Object,
+    default: Object
+  }
+})
 const emits = defineEmits(['change'])
 
 const mentionOptions = ref({
@@ -149,6 +172,10 @@ const dropdownOptions = ref([
   { id: '3', name: 'Tom' },
   { id: '4', name: 'Jerry' }
 ])
+
+watch(() => props.oldDropdownOptions, () => {
+  dropdownOptions.value = props.oldDropdownOptions
+}, { deep: true })
 
 const formItems = [
   {
@@ -217,10 +244,13 @@ const formItems = [
   }
 ]
 
-watch([mentionOptions, dropdownOptions], () => {
-  console.log('change?', mentionOptions.value, dropdownOptions.value)
+// watch([mentionOptions, dropdownOptions], () => {
+//   emits('change', mentionOptions.value, dropdownOptions.value)
+// }, { immediate: true, deep: true })
+
+const handleSubmit = () => {
   emits('change', mentionOptions.value, dropdownOptions.value)
-}, { immediate: true, deep: true })
+}
 
 const removeRow = (row) => {
   dropdownOptions.value = dropdownOptions.value.filter(item => item.id !== row.id)
@@ -236,7 +266,7 @@ const addRow = () => {
 const handleTableInputChange = (id, fieldName, e) => {
   const value = e.target.value
 
-  const row = dropdownOptions.value.find(item => item.id === id)
+  const row = dropdownOptions.value.find(item => item[props.oldMentionOptions.valueFieldName] === id)
 
   if (row) {
     row[fieldName] = value
@@ -302,5 +332,14 @@ dd {
 
 .table-link.danger {
   color: #f40;
+}
+
+.btn-confirm {
+  width: 200px;
+  height: 36px;
+  margin: 0 auto;
+  font-size: 16px;
+  background-color: var(--vp-button-brand-bg);
+  color: var(--vp-button-brand-text);
 }
 </style>

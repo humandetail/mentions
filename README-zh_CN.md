@@ -2,6 +2,8 @@
 
 @vanilla @mentions
 
+[English](https://github.com/humandetail/mentions/blob/main/README.md)
+
 ## 简介
 
 本项目致力于创建一个通过 div 模拟的 Input 输入框，使用户能够在文本中便捷地提及其他用户或实体。
