@@ -1,5 +1,14 @@
 
 
+# [0.1.0](https://github.com/humandetail/mentions/compare/mentions.js-0.0.2...${npm.name}-0.1.0) (2024-03-29)
+
+
+### Bug Fixes
+
+* 修复中文输入法下输入@会在搜索框中也出现@的问题 ([3b8e697](https://github.com/humandetail/mentions/commit/3b8e69786be380e7bf833330610373d31fb6aad8))
+* labelFieldName valueFieldName disabled readonly 等字段设置bug ([86c2682](https://github.com/humandetail/mentions/commit/86c2682374bb1a2cbc73507784fa4f88de522476))
+* vitepress启动错误 ([307c892](https://github.com/humandetail/mentions/commit/307c892bead6022a0f3f00f11d23fbffc5283eac))
+
 ## 0.0.2 (2023-05-30)
 
 
