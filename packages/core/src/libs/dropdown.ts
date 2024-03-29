@@ -26,8 +26,8 @@ const initDropdown = (context: Context, options: MentionOptions) => {
 
   const dropdownState: DropdownState = {
     visible: false,
-    labelFieldName: 'name',
-    valueFieldName: 'id',
+    labelFieldName: options.labelFieldName ?? 'name',
+    valueFieldName: options.valueFieldName ?? 'id',
     options: options.options ?? [],
     remoteOptions: [],
     immediate: options.immediate,
@@ -163,6 +163,10 @@ const initDropdown = (context: Context, options: MentionOptions) => {
       mode: 'single'
     })
 
+    try {
+      document.body.style.overflow = 'hidden'
+    } catch (err) {}
+
     const needFetch = isEmptyArray(dropdownState.currentOptions) &&
       isFunction(dropdownState.optionsFetchApi) &&
       !dropdownState.immediate
@@ -236,6 +240,10 @@ const initDropdown = (context: Context, options: MentionOptions) => {
       // context.renderer.restoreState(context)
       renderer.renderFailureAt(oAt, context)
     }
+
+    try {
+      document.body.style.overflow = ''
+    } catch (err) {}
   }
 
   const submit = () => {
@@ -322,7 +330,9 @@ const initDropdown = (context: Context, options: MentionOptions) => {
     } = context
     const {
       currentOptions,
-      selectedRowKeys
+      selectedRowKeys,
+      labelFieldName = 'name',
+      valueFieldName = 'id'
     } = dropdownState
 
     const oList = createElement('ul', {
@@ -333,13 +343,13 @@ const initDropdown = (context: Context, options: MentionOptions) => {
           ? DOM_CLASSES.DROPDOWN_LIST_OPTION_ACTIVE
           : ''
         } ${option.disabled ? DOM_CLASSES.DROPDOWN_LIST_OPTION_DISABLED : ''}`,
-        'data-id': option.id,
-        'data-name': option.name
+        'data-id': (option as unknown as Record<string, string>)[valueFieldName],
+        'data-name': (option as unknown as Record<string, string>)[labelFieldName]
       }, [
         createElement('span', {
           class: DOM_CLASSES.DROPDOWN_CHECKBOX
         }),
-        typeof option.customRender === 'function' ? option.customRender(option, index) : option.name
+        typeof option.customRender === 'function' ? option.customRender(option, index) : (option as unknown as Record<string, string>)[labelFieldName]
       ])
     )))
     setTimeout(() => {

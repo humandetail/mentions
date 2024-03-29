@@ -80,7 +80,7 @@ const createState = (options: Required<MentionOptions>): State => {
     ...options,
     value: options.value || options.initialValue || '',
     get valueLength () {
-      return getValueLength(this.value, options.formatter?.pattern, options.getMentionLength)
+      return getValueLength(this.value, options.labelFieldName, options.valueFieldName, options.formatter?.pattern, options.getMentionLength)
     },
 
     record: createRecord('', -1, -1, -1, -1),
@@ -91,6 +91,7 @@ const createState = (options: Required<MentionOptions>): State => {
 
 const createMentions = (opts?: MentionOptions): MentionConstructor => {
   const options = mergeOptions(opts)
+  console.log('create options', options)
 
   const renderer = createRenderer(options)
   const eventHandler = createEventHandler()
@@ -136,6 +137,11 @@ const createMentions = (opts?: MentionOptions): MentionConstructor => {
     set (key, value) {
       let val: string
       switch (key) {
+        case 'disabled':
+        case 'readonly':
+          context.state.disabled = true
+          break
+
         case 'value':
           val = fitValue(value as string, options.maxLength)!
 

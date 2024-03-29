@@ -77,15 +77,17 @@ const createEventHandler = () => {
         maxLength,
         prefix,
         formatter,
-        getMentionLength
+        getMentionLength,
+        labelFieldName,
+        valueFieldName
       }
     } = _context
 
     const { data } = e
     const target = e.target as HTMLElement
 
-    const value = valueFormatter(target.innerHTML, formatter?.parser)
-    const valueLength = getValueLength(value, formatter?.pattern, getMentionLength)
+    const value = valueFormatter(target.innerHTML, labelFieldName, valueFieldName, formatter?.parser)
+    const valueLength = getValueLength(value, labelFieldName, valueFieldName, formatter?.pattern, getMentionLength)
 
     if (integerValidator(maxLength) && valueLength + 1 > maxLength) {
       return
@@ -121,12 +123,22 @@ const createEventHandler = () => {
     const {
       state: {
         maxLength,
-        formatter
+        formatter,
+        labelFieldName,
+        valueFieldName,
+        disabled,
+        readonly
       }
     } = _context
+
+    if (disabled || readonly) {
+      // DISABLED
+      return
+    }
+
     const target = e.target as HTMLElement
 
-    const value = valueFormatter(target.innerHTML, formatter?.parser)
+    const value = valueFormatter(target.innerHTML, labelFieldName, valueFieldName, formatter?.parser)
 
     // 输入达到最大值的时候还原输入框的值
     if (integerValidator(maxLength) && getValueLength(value) > maxLength) {
@@ -140,7 +152,12 @@ const createEventHandler = () => {
     // _context.renderer.getMentionsByValueChange(_context)
   }
 
-  const handleMousedown = () => {
+  const handleMousedown = (e: Event) => {
+    if (_context.state.disabled || _context.state.readonly) {
+      e.preventDefault()
+      return
+    }
+
     document.addEventListener('mouseup', handleMouseup, { once: true })
   }
 
@@ -187,6 +204,11 @@ const createEventHandler = () => {
   }
 
   const handleFocus = (e: Event) => {
+    if (_context.state.disabled || _context.state.readonly) {
+      // DISABLED
+      return
+    }
+
     const target = e.target as HTMLElement
     target.classList.add(DOM_CLASSES.FOCUSED)
     setTimeout(() => {

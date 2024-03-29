@@ -146,7 +146,7 @@ describe('utils', () => {
     })
 
     test('with parser', () => {
-      expect(valueFormatter(innerHTML, (id, name) => `@[${id}]:[${name}]`))
+      expect(valueFormatter(innerHTML, 'name', 'id', (id, name) => `@[${id}]:[${name}]`))
         .toBe('Hi, @[1][张三], This is @[2][李四].\nNice to meet you.')
     })
   })
@@ -166,7 +166,7 @@ describe('utils', () => {
       expect(computeMentionLength(mentionOption)).toEqual(14)
     })
     test('with calculator', () => {
-      expect(computeMentionLength(mentionOption, () => 2)).toEqual(2)
+      expect(computeMentionLength(mentionOption, 'name', 'id', () => 2)).toEqual(2)
     })
   })
 
@@ -179,7 +179,7 @@ describe('utils', () => {
   test('getValueLength', () => {
     const value = 'Hi, #{name:张三,id:1}, This is #{name:李四,id:2}.\nNice to meet you.'
     expect(getValueLength(value)).toEqual(value.length)
-    expect(getValueLength(value, /#ABCDEF/)).toEqual(value.length)
-    expect(getValueLength(value, MENTION_REG, () => 2)).toEqual(value.length - 13 * 2)
+    expect(getValueLength(value, 'name', 'id', /#ABCDEF/)).toEqual(value.length)
+    expect(getValueLength(value, 'name', 'id', MENTION_REG, () => 2)).toEqual(value.length - 13 * 2)
   })
 })

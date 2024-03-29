@@ -30,6 +30,8 @@ export interface MentionConstructor {
   mount: (el: string | HTMLElement) => void
   destroy: Noop
   set: {
+    (key: 'readonly', value: boolean): MentionConstructor
+    (key: 'disabled', value: boolean): MentionConstructor
     (key: 'value', value: string): MentionConstructor
     (key: 'options', value: MentionDropdownListOption[]): MentionConstructor
     (key: 'max-length', value: number): MentionConstructor
