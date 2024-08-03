@@ -91,7 +91,6 @@ const createState = (options: Required<MentionOptions>): State => {
 
 const createMentions = (opts?: MentionOptions): MentionConstructor => {
   const options = mergeOptions(opts)
-  console.log('create options', options)
 
   const renderer = createRenderer(options)
   const eventHandler = createEventHandler()
