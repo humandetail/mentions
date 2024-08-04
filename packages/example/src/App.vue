@@ -13,16 +13,18 @@ import 'mentions.js/mentions.css'
 
 onMounted(() => {
   const editor = createMentions({
-    value: 'Hello #{value:张 三,key:1}，你好啊#{value:李 四,key:2}，这里是#{value:王 五,key:3}.\nWorld!',
+    labelFieldName: 'title',
+    valueFieldName: 'field',
+    value: 'Hello #{title:张 三,field:1}，你好啊#{title:李 四,field:2}，这里是#{title:王 五,field:3}.\nWorld!',
     options: [
-      { key: '1', value: '张 三', disabled: true },
-      { key: '2', value: '李 四' },
-      { key: '3', value: '王 五' },
-      { key: '4', value: '赵 六' },
-      { key: '5', value: '田 七' },
-      { key: '6', value: '孙 八' },
-      { key: '7', value: '金 九' },
-      { key: '8', value: '银 十' }
+      { field: '1', title: '张 三', disabled: true },
+      { field: '2', title: '李 四' },
+      { field: '3', title: '王 五' },
+      { field: '4', title: '赵 六' },
+      { field: '5', title: '田 七' },
+      { field: '6', title: '孙 八' },
+      { field: '7', title: '金 九' },
+      { field: '8', title: '银 十' }
     ],
     maxLength: 30
     // optionsFetchApi: () => {

@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1722746857214" clover="3.2.0">
-  <project timestamp="1722746857215" name="All files">
-    <metrics statements="375" coveredstatements="317" conditionals="51" coveredconditionals="48" methods="31" coveredmethods="25" elements="457" coveredelements="390" complexity="0" loc="375" ncloc="375" packages="3" files="3" classes="3"/>
+<coverage generated="1722748483230" clover="3.2.0">
+  <project timestamp="1722748483230" name="All files">
+    <metrics statements="377" coveredstatements="319" conditionals="52" coveredconditionals="49" methods="32" coveredmethods="26" elements="461" coveredelements="394" complexity="0" loc="377" ncloc="377" packages="3" files="3" classes="3"/>
     <package name="config">
-      <metrics statements="89" coveredstatements="89" conditionals="2" coveredconditionals="2" methods="1" coveredmethods="0"/>
+      <metrics statements="89" coveredstatements="89" conditionals="3" coveredconditionals="3" methods="2" coveredmethods="1"/>
       <file name="index.ts" path="/Volumes/code/mentions/packages/core/src/config/index.ts">
-        <metrics statements="89" coveredstatements="89" conditionals="2" coveredconditionals="2" methods="1" coveredmethods="0"/>
+        <metrics statements="89" coveredstatements="89" conditionals="3" coveredconditionals="3" methods="2" coveredmethods="1"/>
         <line num="1" count="1" type="stmt"/>
         <line num="2" count="1" type="stmt"/>
         <line num="3" count="1" type="stmt"/>
@@ -90,7 +90,7 @@
         <line num="82" count="1" type="stmt"/>
         <line num="83" count="1" type="stmt"/>
         <line num="84" count="1" type="stmt"/>
-        <line num="85" count="1" type="stmt"/>
+        <line num="85" count="1" type="cond" truecount="1" falsecount="0"/>
         <line num="86" count="1" type="stmt"/>
         <line num="87" count="1" type="stmt"/>
         <line num="88" count="1" type="stmt"/>
@@ -222,9 +222,9 @@
       </file>
     </package>
     <package name="utils">
-      <metrics statements="168" coveredstatements="114" conditionals="29" coveredconditionals="26" methods="17" coveredmethods="13"/>
+      <metrics statements="170" coveredstatements="116" conditionals="29" coveredconditionals="26" methods="17" coveredmethods="13"/>
       <file name="index.ts" path="/Volumes/code/mentions/packages/core/src/utils/index.ts">
-        <metrics statements="168" coveredstatements="114" conditionals="29" coveredconditionals="26" methods="17" coveredmethods="13"/>
+        <metrics statements="170" coveredstatements="116" conditionals="29" coveredconditionals="26" methods="17" coveredmethods="13"/>
         <line num="1" count="1" type="stmt"/>
         <line num="2" count="1" type="stmt"/>
         <line num="3" count="1" type="stmt"/>
@@ -379,20 +379,22 @@
         <line num="152" count="1" type="cond" truecount="1" falsecount="0"/>
         <line num="153" count="3" type="stmt"/>
         <line num="154" count="3" type="stmt"/>
-        <line num="155" count="3" type="cond" truecount="2" falsecount="0"/>
-        <line num="156" count="4" type="stmt"/>
-        <line num="157" count="4" type="stmt"/>
+        <line num="155" count="3" type="stmt"/>
+        <line num="156" count="3" type="stmt"/>
+        <line num="157" count="3" type="cond" truecount="2" falsecount="0"/>
         <line num="158" count="4" type="stmt"/>
-        <line num="159" count="4" type="cond" truecount="0" falsecount="1"/>
-        <line num="160" count="0" type="stmt"/>
-        <line num="161" count="4" type="stmt"/>
-        <line num="162" count="4" type="stmt"/>
-        <line num="163" count="3" type="stmt"/>
-        <line num="164" count="3" type="stmt"/>
-        <line num="165" count="1" type="stmt"/>
-        <line num="166" count="1" type="stmt"/>
+        <line num="159" count="4" type="stmt"/>
+        <line num="160" count="4" type="stmt"/>
+        <line num="161" count="4" type="cond" truecount="0" falsecount="1"/>
+        <line num="162" count="0" type="stmt"/>
+        <line num="163" count="4" type="stmt"/>
+        <line num="164" count="4" type="stmt"/>
+        <line num="165" count="3" type="stmt"/>
+        <line num="166" count="3" type="stmt"/>
         <line num="167" count="1" type="stmt"/>
         <line num="168" count="1" type="stmt"/>
+        <line num="169" count="1" type="stmt"/>
+        <line num="170" count="1" type="stmt"/>
       </file>
     </package>
   </project>
