@@ -13,30 +13,30 @@ import 'mentions.js/mentions.css'
 
 onMounted(() => {
   const editor = createMentions({
-    value: 'Hello #{name:张 三,id:1}，你好啊#{name:李 四,id:2}，这里是#{name:王 五,id:3}.\nWorld!',
+    value: 'Hello #{value:张 三,key:1}，你好啊#{value:李 四,key:2}，这里是#{value:王 五,key:3}.\nWorld!',
     options: [
-      { id: '1', name: '张 三', disabled: true },
-      { id: '2', name: '李 四' },
-      { id: '3', name: '王 五' },
-      { id: '4', name: '赵 六' },
-      { id: '5', name: '田 七' },
-      { id: '6', name: '孙 八' },
-      { id: '7', name: '金 九' },
-      { id: '8', name: '银 十' }
+      { key: '1', value: '张 三', disabled: true },
+      { key: '2', value: '李 四' },
+      { key: '3', value: '王 五' },
+      { key: '4', value: '赵 六' },
+      { key: '5', value: '田 七' },
+      { key: '6', value: '孙 八' },
+      { key: '7', value: '金 九' },
+      { key: '8', value: '银 十' }
     ],
     maxLength: 30
     // optionsFetchApi: () => {
     //   return new Promise(resolve => {
     //     setTimeout(() => {
     //       resolve([
-    //         { id: '1', name: 'R 张 三' },
-    //         { id: '2', name: 'R 李 四' },
-    //         { id: '3', name: 'R 王 五' },
-    //         { id: '4', name: 'R 赵 六' },
-    //         { id: '5', name: 'R 田 七' },
-    //         { id: '6', name: 'R 孙 八' },
-    //         { id: '7', name: 'R 金 九' },
-    //         { id: '8', name: 'R 银 十' }
+    //         { key: '1', value: 'R 张 三' },
+    //         { key: '2', value: 'R 李 四' },
+    //         { key: '3', value: 'R 王 五' },
+    //         { key: '4', value: 'R 赵 六' },
+    //         { key: '5', value: 'R 田 七' },
+    //         { key: '6', value: 'R 孙 八' },
+    //         { key: '7', value: 'R 金 九' },
+    //         { key: '8', value: 'R 银 十' }
     //       ])
     //     }, 2000)
     //   })
@@ -46,7 +46,7 @@ onMounted(() => {
   // setTimeout(() => {
   //   editor.set('value', 'Hello world\n你好啊')
   //     .set('options', [
-  //       { id: '1', name: '张三' }
+  //       { key: '1', value: '张三' }
   //     ])
   //     .set('max-length', 10)
   // }, 3000)

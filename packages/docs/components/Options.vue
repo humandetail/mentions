@@ -157,20 +157,20 @@ const mentionOptions = ref({
   getMentionLength: null,
   showStatistics: null,
   formatter: null,
-  labelFieldName: 'name',
-  valueFieldName: 'id',
+  labelFieldName: 'value',
+  valueFieldName: 'key',
   optionsFetchApi: null,
   immediate: false,
-  filterOption: (option, filterValue) => option.name.toLowerCase().includes(filterValue.toLowerCase()),
+  filterOption: (option, filterValue) => option.value.toLowerCase().includes(filterValue.toLowerCase()),
   dropdownMaxWidth: null,
   dropdownMaxHeight: 200
 })
 
 const dropdownOptions = ref([
-  { id: '1', name: 'John' },
-  { id: '2', name: 'Jack' },
-  { id: '3', name: 'Tom' },
-  { id: '4', name: 'Jerry' }
+  { key: '1', value: 'John' },
+  { key: '2', value: 'Jack' },
+  { key: '3', value: 'Tom' },
+  { key: '4', value: 'Jerry' }
 ])
 
 watch(() => props.oldDropdownOptions, () => {
@@ -253,20 +253,20 @@ const handleSubmit = () => {
 }
 
 const removeRow = (row) => {
-  dropdownOptions.value = dropdownOptions.value.filter(item => item.id !== row.id)
+  dropdownOptions.value = dropdownOptions.value.filter(item => item.key !== row.key)
 }
 
 const addRow = () => {
   dropdownOptions.value.push({
-    id: '',
-    name: ''
+    key: '',
+    value: ''
   })
 }
 
-const handleTableInputChange = (id, fieldName, e) => {
+const handleTableInputChange = (key, fieldName, e) => {
   const value = e.target.value
 
-  const row = dropdownOptions.value.find(item => item[props.oldMentionOptions.valueFieldName] === id)
+  const row = dropdownOptions.value.find(item => item[props.oldMentionOptions.valueFieldName] === key)
 
   if (row) {
     row[fieldName] = value

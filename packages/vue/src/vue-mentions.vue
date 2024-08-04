@@ -21,7 +21,7 @@ export default {
   mounted () {
     this.mentions = createMentions({
       // options: [
-      //   { id: '1', name: '张三' }
+      //   { key: '1', value: '张三' }
       // ]
     })
     console.log(this.mentions)

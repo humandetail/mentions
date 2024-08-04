@@ -3,8 +3,8 @@ import type { Context, MentionOptions } from '../mentions'
 import { computeMentionLength, createMentionElement, getMentionPattern, getValueLength, insertNodeAfterRange, integerValidator, isEmptyTextNode, valueFormatter } from '../utils'
 
 export interface MentionDropdownListOption {
-  name: string
-  id: string
+  key: string
+  value: string
   disabled?: boolean
   customRender?: (option: MentionDropdownListOption, index: number) => string
 }
@@ -49,21 +49,21 @@ const createRenderer = (options: Required<MentionOptions>) => {
 
     const reg = getMentionPattern(formatter?.pattern ?? MENTION_REG)
 
-    return val.replace(/\n/g, '<br />').replace(reg.global, (_, name: string, id: string) => {
+    return val.replace(/\n/g, '<br />').replace(reg.global, (_, value: string, key: string) => {
       return `<em
         class="${DOM_CLASSES.MENTION}"
-        data-id="${id}"
-        data-name="${name}"
+        data-key="${key}"
+        data-name="${value}"
         contenteditable="false"
-      >${renderMentionContent(id, name)}</em>`
+      >${renderMentionContent(key, value)}</em>`
     })
   }
 
-  const renderMentionContent = (id: string, name: string) => {
+  const renderMentionContent = (key: string, value: string) => {
     const { prefix, suffix, formatter } = options
     return typeof formatter?.render === 'function'
-      ? formatter.render(id, name)
-      : `${prefix}${name}${suffix}`
+      ? formatter.render(key, value)
+      : `${prefix}${value}${suffix}`
   }
 
   const renderFailureAt = (oAt: HTMLElement, context: Context) => {
@@ -208,7 +208,7 @@ const createRenderer = (options: Required<MentionOptions>) => {
 
     mentions.forEach(mention => {
       // 2. 插入 @Mention 内容块并让光标位置插入块之后
-      const oM = createMentionElement(mention.name, mention.id, prefix, suffix)
+      const oM = createMentionElement(mention.value, mention.key, prefix, suffix)
 
       if (!(integerValidator(maxLength) && getValueLength(value) + computeMentionLength(mention, labelFieldName, valueFieldName, context.state.getMentionLength) > maxLength)) {
         // 只允许在剩余长度足够的情况下插入 mention
@@ -247,13 +247,13 @@ const createRenderer = (options: Required<MentionOptions>) => {
     match?.forEach(val => {
       const m = val.match(reg.single)
       if (m) {
-        const option = options.find(i => i.id === m[2])
+        const option = options.find(i => i.key === m[2])
         if (option) {
           currentMentions.push(option)
         } else {
           currentMentions.push({
-            id: m[2],
-            name: m[1]
+            key: m[2],
+            value: m[1]
           })
         }
       }

@@ -45,7 +45,7 @@ describe('utils', () => {
       valueFieldName: 'value',
       optionsFetchApi: null,
       immediate: true,
-      filterOption: (option: MentionDropdownListOption, filterValue: string) => option.name.toLowerCase().includes(filterValue.toLowerCase()),
+      filterOption: (option: MentionDropdownListOption, filterValue: string) => option.value.toLowerCase().includes(filterValue.toLowerCase()),
       dropdownMaxWidth: 200,
       dropdownMaxHeight: 200
     }
@@ -68,7 +68,7 @@ describe('utils', () => {
     const oM = createMentionElement('张三', '1', '#', '_')
     expect(oM.tagName).toBe('EM')
     expect(oM.className).toBe(DOM_CLASSES.MENTION)
-    expect(oM.getAttribute('data-id')).toBe('1')
+    expect(oM.getAttribute('data-key')).toBe('1')
     expect(oM.getAttribute('data-name')).toBe('张三')
     expect(oM.getAttribute('contenteditable')).toBe('false')
 
@@ -139,14 +139,14 @@ describe('utils', () => {
   })
 
   it('valueFormatter', () => {
-    const innerHTML = `Hi, <em class="${DOM_CLASSES.MENTION}" data-id="1" data-name="张三">@张三 </em>, This is <em class="${DOM_CLASSES.MENTION}" data-id="2" data-name="李四">@李四 </em>.<br/>Nice to meet you.`
+    const innerHTML = `Hi, <em class="${DOM_CLASSES.MENTION}" data-key="1" data-name="张三">@张三 </em>, This is <em class="${DOM_CLASSES.MENTION}" data-key="2" data-name="李四">@李四 </em>.<br/>Nice to meet you.`
     test('without parser', () => {
       expect(valueFormatter(innerHTML))
-        .toBe('Hi, #{name:张三,id:1}, This is #{name:李四,id:2}.\nNice to meet you.')
+        .toBe('Hi, #{value:张三,key:1}, This is #{value:李四,key:2}.\nNice to meet you.')
     })
 
     test('with parser', () => {
-      expect(valueFormatter(innerHTML, 'name', 'id', (id, name) => `@[${id}]:[${name}]`))
+      expect(valueFormatter(innerHTML, 'value', 'key', (key, value) => `@[${key}]:[${value}]`))
         .toBe('Hi, @[1][张三], This is @[2][李四].\nNice to meet you.')
     })
   })
@@ -159,27 +159,27 @@ describe('utils', () => {
 
   it('computeMentionLength', () => {
     const mentionOption: MentionDropdownListOption = {
-      id: '1',
-      name: '张三'
+      key: '1',
+      value: '张三'
     }
     test('without calculator', () => {
       expect(computeMentionLength(mentionOption)).toEqual(14)
     })
     test('with calculator', () => {
-      expect(computeMentionLength(mentionOption, 'name', 'id', () => 2)).toEqual(2)
+      expect(computeMentionLength(mentionOption, 'value', 'key', () => 2)).toEqual(2)
     })
   })
 
   test('getMentionPattern', () => {
-    const pattern = /#{name:([^}]+?),id:([^}]+?)}/g
-    expect(getMentionPattern(pattern).global).toEqual(/#{name:([^}]+?),id:([^}]+?)}/g)
-    expect(getMentionPattern(pattern).single).toEqual(/#{name:([^}]+?),id:([^}]+?)}/)
+    const pattern = /#{value:([^}]+?),key:([^}]+?)}/g
+    expect(getMentionPattern(pattern).global).toEqual(/#{value:([^}]+?),key:([^}]+?)}/g)
+    expect(getMentionPattern(pattern).single).toEqual(/#{value:([^}]+?),key:([^}]+?)}/)
   })
 
   test('getValueLength', () => {
-    const value = 'Hi, #{name:张三,id:1}, This is #{name:李四,id:2}.\nNice to meet you.'
+    const value = 'Hi, #{value:张三,key:1}, This is #{value:李四,key:2}.\nNice to meet you.'
     expect(getValueLength(value)).toEqual(value.length)
-    expect(getValueLength(value, 'name', 'id', /#ABCDEF/)).toEqual(value.length)
-    expect(getValueLength(value, 'name', 'id', MENTION_REG, () => 2)).toEqual(value.length - 13 * 2)
+    expect(getValueLength(value, 'value', 'key', /#ABCDEF/)).toEqual(value.length)
+    expect(getValueLength(value, 'value', 'key', MENTION_REG, () => 2)).toEqual(value.length - 15 * 2)
   })
 })

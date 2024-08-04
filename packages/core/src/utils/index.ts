@@ -11,10 +11,9 @@ export const mergeOptions = <T extends MentionOptions>(options?: T): Required<T>
   } as unknown as Required<T>
 }
 
-export const fitValue = (value?: string, maxLength?: number) => {
+export const fitValue = (value: string, maxLength?: number) => {
   if (
     integerValidator(maxLength ?? 0) &&
-    value &&
     (maxLength! < getValueLength(value))
   ) {
     value = value.slice(0, maxLength)
@@ -67,15 +66,15 @@ export const createAtElement = (prefix: string) => {
   return oAt
 }
 
-export const createMentionElement = (name: string, id: string | number, prefix: string, suffix: string) => {
+export const createMentionElement = (value: string, key: string | number, prefix: string, suffix: string) => {
   const oM = document.createElement('em')
   oM.className = DOM_CLASSES.MENTION
-  oM.setAttribute('data-id', `${id}`)
-  oM.setAttribute('data-name', name)
+  oM.setAttribute('data-key', `${key}`)
+  oM.setAttribute('data-name', value)
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-expect-error
   oM.setAttribute('contenteditable', false)
-  oM.innerText = `${prefix}${name}${suffix}`
+  oM.innerText = `${prefix}${value}${suffix}`
   return oM
 }
 
@@ -118,17 +117,17 @@ export function integerValidator (value: number) {
   return typeof value === 'number' && !Number.isNaN(value) && value > 0 && value % 1 === 0
 }
 
-export const valueFormatter = (innerHTML: HTMLString, labelFieldName = 'name', valueFieldName = 'id', parser?: (id: string, name: string) => string) => {
+export const valueFormatter = (innerHTML: HTMLString, labelFieldName = 'value', valueFieldName = 'key', parser?: (key: string, value: string) => string) => {
   const oDiv = document.createElement('div')
 
   oDiv.innerHTML = innerHTML
     .replace(/(<(?:br)[^>]*>)/ig, '\n')
     .replace(
       MENTION_DOM_REG,
-      (_, $id: string, $name: string) => {
+      (_, $key: string, $value: string) => {
         return typeof parser === 'function'
-          ? parser($id, $name)
-          : `#{${labelFieldName}:${$name},${valueFieldName}:${$id}}`
+          ? parser($key, $value)
+          : `#{${labelFieldName}:${$value},${valueFieldName}:${$key}}`
       }
     )
   return oDiv.innerText
@@ -136,10 +135,10 @@ export const valueFormatter = (innerHTML: HTMLString, labelFieldName = 'name', v
 
 export const isEmptyTextNode = (node: Node) => node.nodeType === 3 && !node.nodeValue?.length
 
-export const computeMentionLength = (mention: MentionDropdownListOption, labelFieldName = 'name', valueFieldName = 'id', calculator?: null | ((m: MentionDropdownListOption, labelFieldName?: string, valueFieldName?: string) => number)) => {
+export const computeMentionLength = (mention: MentionDropdownListOption, labelFieldName = 'value', valueFieldName = 'key', calculator?: null | ((m: MentionDropdownListOption, labelFieldName?: string, valueFieldName?: string) => number)) => {
   return typeof calculator === 'function'
     ? calculator(mention, labelFieldName, valueFieldName)
-    : `#{name:${(mention as unknown as Record<string, string>)[labelFieldName]},id:${(mention as unknown as Record<string, string>)[valueFieldName]}}`.length
+    : `#{value:${(mention as unknown as Record<string, string>)[labelFieldName]},key:${(mention as unknown as Record<string, string>)[valueFieldName]}}`.length
 }
 
 export const getMentionPattern = (pattern: RegExp | string) => {
@@ -150,7 +149,7 @@ export const getMentionPattern = (pattern: RegExp | string) => {
   }
 }
 
-export const getValueLength = (value: string, labelFieldName = 'name', valueFieldName = 'id', pattern: RegExp = MENTION_REG, getMentionLength?: null | ((mention: MentionDropdownListOption, labelFieldName?: string, valueFieldName?: string) => number)) => {
+export const getValueLength = (value: string, labelFieldName = 'value', valueFieldName = 'key', pattern: RegExp = MENTION_REG, getMentionLength?: null | ((mention: MentionDropdownListOption, labelFieldName?: string, valueFieldName?: string) => number)) => {
   const mentionPattern = getMentionPattern(pattern)
   const match = value.match(mentionPattern.global) as unknown as string[]
   return value.replace(mentionPattern.global, '').length + (match ?? []).reduce((count: number, mentionStr: string) => {
@@ -159,7 +158,7 @@ export const getValueLength = (value: string, labelFieldName = 'name', valueFiel
     return count + (
       !m
         ? 0
-        : computeMentionLength({ name: m[1], id: m[2] }, labelFieldName, valueFieldName, getMentionLength)
+        : computeMentionLength({ value: m[1], key: m[2] }, labelFieldName, valueFieldName, getMentionLength)
     )
   }, 0)
 }

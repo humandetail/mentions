@@ -7,8 +7,8 @@ import { fitValue, getValueLength, mergeOptions } from './utils'
 import { initDropdown } from './libs/dropdown'
 export interface Formatter {
   pattern: RegExp
-  render: ((id: string, name: string) => HTMLString)
-  parser: (id: string, name: string) => string
+  render: ((key: string, value: string) => HTMLString)
+  parser: (key: string, value: string) => string
 }
 export interface MentionOptions {
   type?: 'input' | 'textarea'

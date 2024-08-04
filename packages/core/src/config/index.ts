@@ -17,11 +17,11 @@ export const initialOptions: Required<MentionOptions> = {
   showStatistics: null,
   formatter: null,
   options: [],
-  labelFieldName: 'name',
-  valueFieldName: 'id',
+  labelFieldName: 'value',
+  valueFieldName: 'key',
   optionsFetchApi: null,
   immediate: false,
-  filterOption: (option: MentionDropdownListOption, filterValue: string) => option.name.toLowerCase().includes(filterValue.toLowerCase()),
+  filterOption: (option: MentionDropdownListOption, filterValue: string) => option.value.toLowerCase().includes(filterValue.toLowerCase()),
   dropdownMaxWidth: null,
   dropdownMaxHeight: 200
 }
@@ -82,8 +82,8 @@ export const INSERT_TEXT_TYPE = [
   'insertLink'
 ]
 
-export const MENTION_REG = /#{name:([^}]+?),id:([^}]+?)}/g
+export const MENTION_REG = /#{value:([^}]+?),key:([^}]+?)}/g
 
-export const MENTION_DOM_REG = /<\s*em[^>]*class="[^"]*mention[^"]*"[^>]*data-id="([^"]*)"[^>]*data-name="([^"]*)"[^>]*>[\w\W]*?<\/\s*em\s*>/gi
+export const MENTION_DOM_REG = /<\s*em[^>]*class="[^"]*mention[^"]*"[^>]*data-key="([^"]*)"[^>]*data-name="([^"]*)"[^>]*>[\w\W]*?<\/\s*em\s*>/gi
 
 export const HTML_ENTITY_CHARACTER_REG = /&[A-z]+;/i

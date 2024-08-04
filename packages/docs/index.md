@@ -36,10 +36,10 @@ import 'mentions.js/mentions.css'
 const mentions = createMentions({
   value: '',
   options: [
-    { id: 1, name: 'John' },
-    { id: 2, name: 'Jack' },
-    { id: 3, name: 'Tom' },
-    { id: 4, name: 'Jerry' },
+    { key: 1, value: 'John' },
+    { key: 2, value: 'Jack' },
+    { key: 3, value: 'Tom' },
+    { key: 4, value: 'Jerry' },
   ],
 })
 
@@ -68,8 +68,8 @@ mentions.mount(document.getElementById('container'))
 | showStatistics | `null` \| `(options: MentionDropdownListOption, currentMentions: MentionDropdownListOption[]) => string` | `showStatistics(options, currentMentions) => ''` | - |
 | formatter | `null` \| `Formatter` | `null` | 详细说明请看 Formatter |
 | options | `MentionDropdownListOption[]` | `[]` | 提及列表，只有在列表中的数据才可以提及 |
-| labelFieldName | `string` | `name` | - |
-| valueFieldName | `string` | `id` | - |
+| labelFieldName | `string` | `value` | - |
+| valueFieldName | `string` | `key` | - |
 | optionsFetchApi | `null` \| `(...args: unknown[]) => Promise<MentionDropdownListOption[]>` | `null` | 获取提及参数列表的接口 |
 | immediate | `boolean` | `false` | 是否在输入框加载完毕后立即请求，这个参数只有在配置了 `optionsFetchApi` 时生效 |
 | filterOption | `(option: MentionDropdownListOption, filterValue: string) => boolean` | - | 提及列表使用搜索功能时的过滤函数 |
@@ -80,12 +80,12 @@ mentions.mount(document.getElementById('container'))
 
 ```typescript
 interface MentionDropdownListOption {
-  name: string
-  id: string
+  value: string
+  key: string
   disabled?: boolean
   // 自定义格式化输出的提及内容
   // @example
-  // customRender(option = { name: '张三', id: 'A01' }) => `${option.name}-${option.id}`
+  // customRender(option = { value: '张三', key: 'A01' }) => `${option.value}-${option.key}`
   // =>
   // 张三-A01
   customRender?: (option: MentionDropdownListOption, index: number) => string
@@ -98,10 +98,10 @@ interface MentionDropdownListOption {
 interface Formatter {
   // 正则表达式，指示组件如何从 value 中把提及内容提取出来
   pattern: RegExp
-  // 提及块的渲染函数，指示组件如何通过 id 和 name 来生成 HTML String
-  render: ((id: string, name: string) => HTMLString)
-  // 提及块的解析函数，指示组件如何通过 id 和 name 来生成输出时的提及块内容
-  parser: (id: string, name: string) => string
+  // 提及块的渲染函数，指示组件如何通过 key 和 value 来生成 HTML String
+  render: ((key: string, value: string) => HTMLString)
+  // 提及块的解析函数，指示组件如何通过 key 和 value 来生成输出时的提及块内容
+  parser: (key: string, value: string) => string
 }
 ```
 
