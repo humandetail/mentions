@@ -4,8 +4,8 @@ import { computePosition, createAtElement, getValueLength, integerValidator, isM
 
 const createEventHandler = () => {
   let _context!: Context
-  const handleKeydown = (e: KeyboardEvent) => {
-    const { key } = e
+  const handleKeydown = (ev: KeyboardEvent) => {
+    const { key } = ev
     const {
       state: {
         type
@@ -13,30 +13,38 @@ const createEventHandler = () => {
       dropdown
     } = _context
 
-    if (!dropdown?.visible) {
-      if (key === 'Enter') {
-        e.preventDefault()
-        if (type === 'textarea') {
-          const selection = window.getSelection()!
-          if (selection.focusNode?.nextSibling) {
-            document.execCommand('insertHTML', false, '<br/>')
-            return
-          }
-
-          const range = selection.getRangeAt(0)
-          range.deleteContents()
-          const br = document.createElement('br')
-          range.insertNode(br)
-
-          // 将光标移到 br 标签的下一行
-          range.setStartAfter(br)
-          range.setEndAfter(br)
-          selection.removeAllRanges()
-          selection.addRange(range)
-          range.insertNode(document.createElement('br'))
-        }
-      }
+    if (dropdown?.visible) {
+      return
     }
+
+    if (key !== 'Enter') {
+      return
+    }
+
+    ev.preventDefault()
+
+    if (type !== 'textarea') {
+      return
+    }
+
+    // only work on type="textarea"
+    const selection = window.getSelection()!
+    if (selection.focusNode?.nextSibling) {
+      document.execCommand('insertHTML', false, '<br/>')
+      return
+    }
+
+    const range = selection.getRangeAt(0)
+    range.deleteContents()
+    const br = document.createElement('br')
+    range.insertNode(br)
+
+    // 将光标移到 br 标签的下一行
+    range.setStartAfter(br)
+    range.setEndAfter(br)
+    selection.removeAllRanges()
+    selection.addRange(range)
+    range.insertNode(document.createElement('br'))
   }
 
   const handleClick = () => {

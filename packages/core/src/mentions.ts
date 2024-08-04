@@ -119,7 +119,11 @@ const createMentions = (opts?: MentionOptions): MentionConstructor => {
         ? document.querySelector(el)
         : el
 
-      root?.appendChild(oContainer)
+      if (!root || root?.contains(oContainer)) {
+        return
+      }
+
+      root.appendChild(oContainer)
 
       // 触发首次 value change 事件
       context.renderer.handleValueChange(context, context.state.value, true)
