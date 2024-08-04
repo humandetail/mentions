@@ -89,7 +89,7 @@ const createState = (options: Required<MentionOptions>): State => {
   }
 }
 
-const createMentions = (opts?: MentionOptions): MentionConstructor => {
+const createMentions = (opts: MentionOptions = {}): MentionConstructor => {
   const options = mergeOptions(opts)
 
   const renderer = createRenderer(options)

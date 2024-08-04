@@ -1,4 +1,4 @@
-import { DOM_CLASSES, MENTION_REG } from '../config'
+import { DOM_CLASSES, getMentionReg } from '../config'
 import type { Context, MentionOptions } from '../mentions'
 import { computeMentionLength, createMentionElement, getMentionPattern, getValueLength, insertNodeAfterRange, integerValidator, isEmptyTextNode, valueFormatter } from '../utils'
 
@@ -47,7 +47,7 @@ const createRenderer = (options: Required<MentionOptions>) => {
   const formatContent = (val: string) => {
     const { formatter } = options
 
-    const reg = getMentionPattern(formatter?.pattern ?? MENTION_REG)
+    const reg = getMentionPattern(formatter?.pattern ?? getMentionReg(options.valueFieldName, options.labelFieldName))
 
     return val.replace(/\n/g, '<br />').replace(reg.global, (_, value: string, key: string) => {
       return `<em
@@ -236,10 +236,10 @@ const createRenderer = (options: Required<MentionOptions>) => {
     const {
       value,
       formatter,
-      options
+      options: _options
     } = context.state
 
-    const reg = getMentionPattern(formatter?.pattern ?? MENTION_REG)
+    const reg = getMentionPattern(formatter?.pattern ?? getMentionReg(options.valueFieldName, options.labelFieldName))
 
     const currentMentions: MentionDropdownListOption[] = []
     const match = value.match(reg.global)
@@ -247,7 +247,7 @@ const createRenderer = (options: Required<MentionOptions>) => {
     match?.forEach(val => {
       const m = val.match(reg.single)
       if (m) {
-        const option = options.find(i => i.key === m[2])
+        const option = _options.find(i => i.key === m[2])
         if (option) {
           currentMentions.push(option)
         } else {

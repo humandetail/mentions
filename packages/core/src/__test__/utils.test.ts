@@ -20,7 +20,7 @@ import {
   setRangeAfterNode,
   valueFormatter
 } from '../utils'
-import { DOM_CLASSES, MENTION_REG, initialOptions } from '../config'
+import { DOM_CLASSES, getMentionReg, initialOptions } from '../config'
 import type { MentionDropdownListOption } from '../libs/renderer'
 import type { MentionOptions } from '../mentions'
 
@@ -180,6 +180,6 @@ describe('utils', () => {
     const value = 'Hi, #{value:张三,key:1}, This is #{value:李四,key:2}.\nNice to meet you.'
     expect(getValueLength(value)).toEqual(value.length)
     expect(getValueLength(value, 'value', 'key', /#ABCDEF/)).toEqual(value.length)
-    expect(getValueLength(value, 'value', 'key', MENTION_REG, () => 2)).toEqual(value.length - 15 * 2)
+    expect(getValueLength(value, 'value', 'key', getMentionReg(), () => 2)).toEqual(value.length - 15 * 2)
   })
 })

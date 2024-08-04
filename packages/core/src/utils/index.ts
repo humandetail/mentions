@@ -1,5 +1,5 @@
 import { type MentionDropdownListOption } from '../libs/renderer'
-import { DOM_CLASSES, MENTION_DOM_REG, MENTION_REG, initialOptions } from '../config'
+import { DOM_CLASSES, MENTION_DOM_REG, getMentionReg, initialOptions } from '../config'
 import { type MentionOptions } from '../mentions'
 import { type HTMLString } from '../types'
 
@@ -149,7 +149,9 @@ export const getMentionPattern = (pattern: RegExp | string) => {
   }
 }
 
-export const getValueLength = (value: string, labelFieldName = 'value', valueFieldName = 'key', pattern: RegExp = MENTION_REG, getMentionLength?: null | ((mention: MentionDropdownListOption, labelFieldName?: string, valueFieldName?: string) => number)) => {
+export const getValueLength = (value: string, labelFieldName = 'value', valueFieldName = 'key', pattern?: RegExp, getMentionLength?: null | ((mention: MentionDropdownListOption, labelFieldName?: string, valueFieldName?: string) => number)) => {
+  pattern ??= getMentionReg(valueFieldName, labelFieldName)
+
   const mentionPattern = getMentionPattern(pattern)
   const match = value.match(mentionPattern.global) as unknown as string[]
   return value.replace(mentionPattern.global, '').length + (match ?? []).reduce((count: number, mentionStr: string) => {

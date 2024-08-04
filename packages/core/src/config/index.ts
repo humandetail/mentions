@@ -82,7 +82,7 @@ export const INSERT_TEXT_TYPE = [
   'insertLink'
 ]
 
-export const MENTION_REG = /#{value:([^}]+?),key:([^}]+?)}/g
+export const getMentionReg = (key = 'key', value = 'value') => new RegExp(`#{${value}:([^}]+?),${key}:([^}]+?)}`, 'g')
 
 export const MENTION_DOM_REG = /<\s*em[^>]*class="[^"]*mention[^"]*"[^>]*data-key="([^"]*)"[^>]*data-name="([^"]*)"[^>]*>[\w\W]*?<\/\s*em\s*>/gi
 
