@@ -439,6 +439,7 @@ const initDropdown = (context: Context, options: MentionOptions) => {
     if (len === 0) {
       return
     }
+    console.info('📫libs/dropdown.ts:438/[currentOptions]:\n ', currentOptions)
 
     if (isEmptyArray(selectedRowKeys)) {
       dropdownState.selectedRowKeys = key === 'ArrowDown'
@@ -517,6 +518,12 @@ const initDropdown = (context: Context, options: MentionOptions) => {
     dropdownState.switchMode = 'mouse'
     dropdownState.selectedRowKeys = keys
     if (dropdownState.mode === 'single') {
+      const lastCheckedIdx = keys.at(-1)
+
+      if (lastCheckedIdx != null && currentOptions[lastCheckedIdx].disabled) {
+        return
+      }
+
       submit()
     }
   }
@@ -531,6 +538,19 @@ const initDropdown = (context: Context, options: MentionOptions) => {
       }
     } else if (key === 'Enter') {
       e.preventDefault()
+
+      const {
+        currentOptions,
+        selectedRowKeys
+      } = dropdownState
+
+      const lastCheckedIdx = selectedRowKeys.at(-1)
+
+      // 如果选中的是禁用的则不处理
+      if (lastCheckedIdx != null && currentOptions[lastCheckedIdx]?.disabled) {
+        return
+      }
+
       submit()
     }
   }

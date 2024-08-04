@@ -21,6 +21,7 @@ const createEventHandler = () => {
       return
     }
 
+    // type="input"
     ev.preventDefault()
 
     if (type !== 'textarea') {
