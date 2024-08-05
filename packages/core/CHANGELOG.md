@@ -1,5 +1,14 @@
 
 
+## [0.1.1](https://github.com/humandetail/mentions/compare/mentions.js-0.1.0...${npm.name}-0.1.1) (2024-08-05)
+
+
+### Bug Fixes
+
+* disabled options don't selectable ([6dc1032](https://github.com/humandetail/mentions/commit/6dc103288cec54e0aabc690cb41f53a49728f006))
+* fixed an issue that could not be echoed normally after modifying label/value field name ([8c94a43](https://github.com/humandetail/mentions/commit/8c94a43bb4ca4aafe6324998095f8099d79199cb))
+* label 和 value 字段混淆 ([2fafe79](https://github.com/humandetail/mentions/commit/2fafe791208bc30adbd7a72c75ddd5c0d52027ee))
+
 # [0.1.0](https://github.com/humandetail/mentions/compare/mentions.js-0.0.2...${npm.name}-0.1.0) (2024-03-29)
 
 
