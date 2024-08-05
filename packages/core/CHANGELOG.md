@@ -1,5 +1,12 @@
 
 
+## [0.1.2](https://github.com/humandetail/mentions/compare/mentions.js-0.1.1...${npm.name}-0.1.2) (2024-08-05)
+
+
+### Bug Fixes
+
+* 获取RegExp时缺少prefix参数 ([e85897b](https://github.com/humandetail/mentions/commit/e85897bdb2dc5bec71de670c8512da416fa33af3))
+
 ## [0.1.1](https://github.com/humandetail/mentions/compare/mentions.js-0.1.0...${npm.name}-0.1.1) (2024-08-05)
 
 
