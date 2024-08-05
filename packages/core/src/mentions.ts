@@ -7,8 +7,8 @@ import { fitValue, getValueLength, mergeOptions } from './utils'
 import { initDropdown } from './libs/dropdown'
 export interface Formatter {
   pattern: RegExp
-  render: ((key: string, value: string) => HTMLString)
-  parser: (key: string, value: string) => string
+  render: ((label: string, value: string) => HTMLString)
+  parser: (label: string, value: string) => string
 }
 export interface MentionOptions {
   type?: 'input' | 'textarea'
@@ -98,6 +98,7 @@ const createMentions = (opts: MentionOptions = {}): MentionConstructor => {
   const oEditor = renderer.createElement('div', { class: `${DOM_CLASSES.INPUT}`, contenteditable: true })
   const oDropdownContainer = renderer.createElement('div', null)
   const oContainer = renderer.createElement('div', { class: DOM_CLASSES.CONTAINER }, [oEditor, oDropdownContainer])
+
   oEditor.innerHTML = renderer.formatContent(options.value)
 
   const context: Context = {

@@ -27,8 +27,8 @@ const initDropdown = (context: Context, options: MentionOptions) => {
 
   const dropdownState: DropdownState = {
     visible: false,
-    labelFieldName: options.labelFieldName ?? 'value',
-    valueFieldName: options.valueFieldName ?? 'key',
+    labelFieldName: options.labelFieldName ?? 'label',
+    valueFieldName: options.valueFieldName ?? 'value',
     options: options.options ?? [],
     remoteOptions: [],
     immediate: options.immediate,
@@ -114,6 +114,7 @@ const initDropdown = (context: Context, options: MentionOptions) => {
       _selectedRowKeys = keys
 
       const oOptions = context.dropdownContainer.querySelectorAll(`.${DOM_CLASSES.DROPDOWN_LIST_OPTION}`)
+
       oOptions.forEach((option, index) => {
         if (keys.includes(index)) {
           option.classList.add(DOM_CLASSES.DROPDOWN_LIST_OPTION_ACTIVE)
@@ -121,13 +122,20 @@ const initDropdown = (context: Context, options: MentionOptions) => {
           option.classList.remove(DOM_CLASSES.DROPDOWN_LIST_OPTION_ACTIVE)
         }
       })
+
+      const oActive = document.querySelector<HTMLElement>(`.${DOM_CLASSES.DROPDOWN_LIST_OPTION}.${DOM_CLASSES.DROPDOWN_LIST_OPTION_ACTIVE}`)
+
+      if (!oActive) {
+        return
+      }
+      context.intersectionObserver?.observe(oActive)
     },
 
     get localOptions () {
       return (isFunction(this.optionsFetchApi) ? this.remoteOptions : this.options).map(option => ({
         ...option,
-        value: option[this.labelFieldName as keyof MentionDropdownListOption] as string,
-        key: option[this.valueFieldName as keyof MentionDropdownListOption] as string
+        label: option[this.labelFieldName as keyof MentionDropdownListOption] as string,
+        value: option[this.valueFieldName as keyof MentionDropdownListOption] as string
       }))
     },
 
@@ -139,7 +147,7 @@ const initDropdown = (context: Context, options: MentionOptions) => {
       if (isFunction(this.filterOption)) {
         return this.localOptions.filter(option => (this.filterOption!)(option, this.filterValue))
       }
-      return this.localOptions.filter(option => option.value.toLowerCase().includes(this.filterValue.toLowerCase()))
+      return this.localOptions.filter(option => option[this.labelFieldName as string].toLowerCase().includes(this.filterValue.toLowerCase()))
     }
   }
 
@@ -332,8 +340,8 @@ const initDropdown = (context: Context, options: MentionOptions) => {
     const {
       currentOptions,
       selectedRowKeys,
-      labelFieldName = 'value',
-      valueFieldName = 'key'
+      labelFieldName = 'label',
+      valueFieldName = 'value'
     } = dropdownState
 
     const oList = createElement('ul', {
@@ -344,8 +352,8 @@ const initDropdown = (context: Context, options: MentionOptions) => {
           ? DOM_CLASSES.DROPDOWN_LIST_OPTION_ACTIVE
           : ''
         } ${option.disabled ? DOM_CLASSES.DROPDOWN_LIST_OPTION_DISABLED : ''}`,
-        'data-key': (option as unknown as Record<string, string>)[valueFieldName],
-        'data-name': (option as unknown as Record<string, string>)[labelFieldName]
+        'data-value': (option as unknown as Record<string, string>)[valueFieldName],
+        'data-label': (option as unknown as Record<string, string>)[labelFieldName]
       }, [
         createElement('span', {
           class: DOM_CLASSES.DROPDOWN_CHECKBOX
@@ -418,6 +426,7 @@ const initDropdown = (context: Context, options: MentionOptions) => {
       }
 
       const oActive = oList.querySelector<HTMLElement>(`.${DOM_CLASSES.DROPDOWN_LIST_OPTION}.${DOM_CLASSES.DROPDOWN_LIST_OPTION_ACTIVE}`)
+
       if (!oActive) {
         return
       }
@@ -436,29 +445,33 @@ const initDropdown = (context: Context, options: MentionOptions) => {
   const switchActiveOption = (key: string) => {
     const { currentOptions, selectedRowKeys } = dropdownState
     const len = currentOptions.length
-    if (len === 0) {
+    if (len === 0 || currentOptions.every(o => o.disabled)) {
       return
     }
-    console.info('📫libs/dropdown.ts:438/[currentOptions]:\n ', currentOptions)
+
+    let i = 0
 
     if (isEmptyArray(selectedRowKeys)) {
-      dropdownState.selectedRowKeys = key === 'ArrowDown'
-        ? [0]
-        : [len - 1]
-      return
+      i = key === 'ArrowDown' ? 0 : len - 1
+    } else if (selectedRowKeys[0] === len - 1 && key === 'ArrowDown') {
+      i = 0
+    } else if (selectedRowKeys[0] === 0 && key === 'ArrowUp') {
+      i = len - 1
+    } else {
+      i = key === 'ArrowDown' ? selectedRowKeys[0] + 1 : selectedRowKeys[0] - 1
     }
 
-    if (selectedRowKeys[0] === len - 1 && key === 'ArrowDown') {
-      dropdownState.selectedRowKeys = [0]
-      return
+    while (currentOptions[i].disabled) {
+      i = key === 'ArrowDown'
+        ? i + 1 === len
+          ? 0
+          : i + 1
+        : i - 1 === -1
+          ? len - 1
+          : i - 1
     }
-    if (selectedRowKeys[0] === 0 && key === 'ArrowUp') {
-      dropdownState.selectedRowKeys = [len - 1]
-      return
-    }
-    dropdownState.selectedRowKeys = key === 'ArrowDown'
-      ? [selectedRowKeys[0] + 1]
-      : [selectedRowKeys[0] - 1]
+
+    dropdownState.selectedRowKeys = [i]
   }
 
   const handleDropdownListOptionMouseover = (e: Event) => {

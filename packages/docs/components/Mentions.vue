@@ -43,8 +43,8 @@ const mentionOptions = ref({
   showStatistics: null,
   formatter: null,
   options: dropdownOptions.value,
-  labelFieldName: 'value',
-  valueFieldName: 'key',
+  labelFieldName: 'label',
+  valueFieldName: 'value',
   optionsFetchApi: null,
   immediate: false,
   filterOption: (option, filterValue) => option.value.toLowerCase().includes(filterValue.toLowerCase()),
@@ -63,11 +63,6 @@ onMounted(() => {
 })
 
 const handleChange = (mOptions, dOptions) => {
-  console.log({
-    mOptions,
-    dOptions
-  })
-
   const { labelFieldName, valueFieldName } = mentionOptions.value
   dropdownOptions.value = dOptions.filter(item => item[labelFieldName] && item[valueFieldName])
     .map(item => {

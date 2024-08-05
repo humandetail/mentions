@@ -45,7 +45,7 @@ describe('utils', () => {
       valueFieldName: 'value',
       optionsFetchApi: null,
       immediate: true,
-      filterOption: (option: MentionDropdownListOption, filterValue: string) => option.value.toLowerCase().includes(filterValue.toLowerCase()),
+      filterOption: (option: MentionDropdownListOption, filterValue: string) => option[options.labelFieldName as string].toLowerCase().includes(filterValue.toLowerCase()),
       dropdownMaxWidth: 200,
       dropdownMaxHeight: 200
     }
@@ -159,8 +159,8 @@ describe('utils', () => {
 
   it('computeMentionLength', () => {
     const mentionOption: MentionDropdownListOption = {
-      key: '1',
-      value: '张三'
+      value: '1',
+      label: '张三'
     }
     test('without calculator', () => {
       expect(computeMentionLength(mentionOption)).toEqual(14)
@@ -171,15 +171,15 @@ describe('utils', () => {
   })
 
   test('getMentionPattern', () => {
-    const pattern = /#{value:([^}]+?),key:([^}]+?)}/g
+    const pattern = /#{label:([^}]+?),value:([^}]+?)}/g
     expect(getMentionPattern(pattern).global).toEqual(/#{value:([^}]+?),key:([^}]+?)}/g)
     expect(getMentionPattern(pattern).single).toEqual(/#{value:([^}]+?),key:([^}]+?)}/)
   })
 
   test('getValueLength', () => {
-    const value = 'Hi, #{value:张三,key:1}, This is #{value:李四,key:2}.\nNice to meet you.'
+    const value = 'Hi, #{label:张三,value:1}, This is #{label:李四,value:2}.\nNice to meet you.'
     expect(getValueLength(value)).toEqual(value.length)
-    expect(getValueLength(value, 'value', 'key', /#ABCDEF/)).toEqual(value.length)
-    expect(getValueLength(value, 'value', 'key', getMentionReg(), () => 2)).toEqual(value.length - 15 * 2)
+    expect(getValueLength(value, 'label', 'value', /#ABCDEF/)).toEqual(value.length)
+    expect(getValueLength(value, 'label', 'value', getMentionReg(), () => 2)).toEqual(value.length - 15 * 2)
   })
 })
