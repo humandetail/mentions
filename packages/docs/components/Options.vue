@@ -157,8 +157,8 @@ const mentionOptions = ref({
   getMentionLength: null,
   showStatistics: null,
   formatter: null,
-  labelFieldName: 'value',
-  valueFieldName: 'key',
+  labelFieldName: 'label',
+  valueFieldName: 'value',
   optionsFetchApi: null,
   immediate: false,
   filterOption: (option, filterValue) => option.value.toLowerCase().includes(filterValue.toLowerCase()),
@@ -266,7 +266,7 @@ const addRow = () => {
 const handleTableInputChange = (key, fieldName, e) => {
   const value = e.target.value
 
-  const row = dropdownOptions.value.find(item => item[props.oldMentionOptions.valueFieldName] === key)
+  const row = dropdownOptions.value.find(item => item[props.oldMentionOptions.labelFieldName] === key)
 
   if (row) {
     row[fieldName] = value

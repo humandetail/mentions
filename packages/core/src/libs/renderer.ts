@@ -3,10 +3,12 @@ import type { Context, MentionOptions } from '../mentions'
 import { computeMentionLength, createMentionElement, getMentionPattern, getValueLength, insertNodeAfterRange, integerValidator, isEmptyTextNode, valueFormatter } from '../utils'
 
 export interface MentionDropdownListOption {
-  key: string
-  value: string
+  key?: string
+  value?: string
   disabled?: boolean
   customRender?: (option: MentionDropdownListOption, index: number) => string
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  [K: string]: any
 }
 
 const createRenderer = (options: Required<MentionOptions>) => {
@@ -47,23 +49,23 @@ const createRenderer = (options: Required<MentionOptions>) => {
   const formatContent = (val: string) => {
     const { formatter } = options
 
-    const reg = getMentionPattern(formatter?.pattern ?? getMentionReg(options.valueFieldName, options.labelFieldName))
+    const reg = getMentionPattern(formatter?.pattern ?? getMentionReg(options.labelFieldName, options.valueFieldName))
 
-    return val.replace(/\n/g, '<br />').replace(reg.global, (_, value: string, key: string) => {
+    return val.replace(/\n/g, '<br />').replace(reg.global, (_, label: string, value: string) => {
       return `<em
         class="${DOM_CLASSES.MENTION}"
-        data-key="${key}"
-        data-name="${value}"
+        data-label="${label}"
+        data-value="${value}"
         contenteditable="false"
-      >${renderMentionContent(key, value)}</em>`
+      >${renderMentionContent(label, value)}</em>`
     })
   }
 
-  const renderMentionContent = (key: string, value: string) => {
+  const renderMentionContent = (label: string, value: string) => {
     const { prefix, suffix, formatter } = options
     return typeof formatter?.render === 'function'
-      ? formatter.render(key, value)
-      : `${prefix}${value}${suffix}`
+      ? formatter.render(label, value)
+      : `${prefix}${label}${suffix}`
   }
 
   const renderFailureAt = (oAt: HTMLElement, context: Context) => {
@@ -208,7 +210,7 @@ const createRenderer = (options: Required<MentionOptions>) => {
 
     mentions.forEach(mention => {
       // 2. 插入 @Mention 内容块并让光标位置插入块之后
-      const oM = createMentionElement(mention.value, mention.key, prefix, suffix)
+      const oM = createMentionElement(mention[labelFieldName], mention[valueFieldName], prefix, suffix)
 
       if (!(integerValidator(maxLength) && getValueLength(value) + computeMentionLength(mention, labelFieldName, valueFieldName, context.state.getMentionLength) > maxLength)) {
         // 只允许在剩余长度足够的情况下插入 mention

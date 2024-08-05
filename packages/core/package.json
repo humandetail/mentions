@@ -41,7 +41,7 @@
     "preview": "vite preview",
     "test": "vitest",
     "coverage": "vitest run --coverage",
-    "release": "release-it"
+    "release": "release-it --npm.publishArgs=\"--registry=https://registry.npmjs.org\" --npm.timeout=100"
   },
   "devDependencies": {
     "@release-it/conventional-changelog": "^5.1.1",

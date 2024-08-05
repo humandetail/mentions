@@ -1,21 +1,27 @@
 <template>
   <div>
-    Vue Mentions
+    Vanilla Mentions
 
     <div class="editor" />
+
+    <p>Plain Value:</p>
+    <p>{{ value }}</p>
   </div>
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue'
+import { ref, onMounted } from 'vue'
 import { createMentions } from 'mentions.js'
 import 'mentions.js/mentions.css'
 
+const value = ref('')
+
 onMounted(() => {
   const editor = createMentions({
+    prefix: '@',
     labelFieldName: 'title',
     valueFieldName: 'field',
-    value: 'Hello #{title:张 三,field:1}，你好啊#{title:李 四,field:2}，这里是#{title:王 五,field:3}.\nWorld!',
+    value: 'Hello @{title:张 三,field:1}，你好啊@{title:李 四,field:2}，这里是@{title:王 五,field:3}.\nWorld!',
     options: [
       { field: '1', title: '张 三', disabled: true },
       { field: '2', title: '李 四' },
@@ -26,7 +32,7 @@ onMounted(() => {
       { field: '7', title: '金 九' },
       { field: '8', title: '银 十' }
     ],
-    maxLength: 30
+    maxLength: 100
     // optionsFetchApi: () => {
     //   return new Promise(resolve => {
     //     setTimeout(() => {
@@ -56,6 +62,7 @@ onMounted(() => {
   editor
     .on('change', (newVal, oldVal) => {
       console.log('change', newVal, oldVal)
+      value.value = newVal
     })
     .once('open', () => {
       console.log('open')
