@@ -80,7 +80,7 @@ const createState = (options: Required<MentionOptions>): State => {
     ...options,
     value: options.value || options.initialValue || '',
     get valueLength () {
-      return getValueLength(this.value, options.labelFieldName, options.valueFieldName, options.formatter?.pattern, options.getMentionLength)
+      return getValueLength(this.value, options.labelFieldName, options.valueFieldName, options.prefix, options.formatter?.pattern, options.getMentionLength)
     },
 
     record: createRecord('', -1, -1, -1, -1),

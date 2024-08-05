@@ -132,11 +132,12 @@ const initDropdown = (context: Context, options: MentionOptions) => {
     },
 
     get localOptions () {
-      return (isFunction(this.optionsFetchApi) ? this.remoteOptions : this.options).map(option => ({
-        ...option,
-        label: option[this.labelFieldName as keyof MentionDropdownListOption] as string,
-        value: option[this.valueFieldName as keyof MentionDropdownListOption] as string
-      }))
+      // return (isFunction(this.optionsFetchApi) ? this.remoteOptions : this.options).map(option => ({
+      //   ...option,
+      //   label: option[this.labelFieldName as keyof MentionDropdownListOption] as string,
+      //   value: option[this.valueFieldName as keyof MentionDropdownListOption] as string
+      // }))
+      return (isFunction(this.optionsFetchApi) ? this.remoteOptions : this.options)
     },
 
     get currentOptions () {

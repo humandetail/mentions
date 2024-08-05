@@ -49,7 +49,7 @@ const createRenderer = (options: Required<MentionOptions>) => {
   const formatContent = (val: string) => {
     const { formatter } = options
 
-    const reg = getMentionPattern(formatter?.pattern ?? getMentionReg(options.labelFieldName, options.valueFieldName))
+    const reg = getMentionPattern(formatter?.pattern ?? getMentionReg(options.labelFieldName, options.valueFieldName, options.prefix))
 
     return val.replace(/\n/g, '<br />').replace(reg.global, (_, label: string, value: string) => {
       return `<em
@@ -241,7 +241,7 @@ const createRenderer = (options: Required<MentionOptions>) => {
       options: _options
     } = context.state
 
-    const reg = getMentionPattern(formatter?.pattern ?? getMentionReg(options.valueFieldName, options.labelFieldName))
+    const reg = getMentionPattern(formatter?.pattern ?? getMentionReg(options.valueFieldName, options.labelFieldName, options.prefix))
 
     const currentMentions: MentionDropdownListOption[] = []
     const match = value.match(reg.global)
@@ -249,7 +249,7 @@ const createRenderer = (options: Required<MentionOptions>) => {
     match?.forEach(val => {
       const m = val.match(reg.single)
       if (m) {
-        const option = _options.find(i => i.key === m[2])
+        const option = _options.find(i => i[options.valueFieldName] === m[2])
         if (option) {
           currentMentions.push(option)
         } else {

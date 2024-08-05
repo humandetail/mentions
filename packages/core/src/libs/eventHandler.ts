@@ -96,7 +96,7 @@ const createEventHandler = () => {
     const target = e.target as HTMLElement
 
     const value = valueFormatter(target.innerHTML, labelFieldName, valueFieldName, formatter?.parser)
-    const valueLength = getValueLength(value, labelFieldName, valueFieldName, formatter?.pattern, getMentionLength)
+    const valueLength = getValueLength(value, labelFieldName, valueFieldName, prefix, formatter?.pattern, getMentionLength)
 
     if (integerValidator(maxLength) && valueLength + 1 > maxLength) {
       return

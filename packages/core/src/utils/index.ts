@@ -149,8 +149,8 @@ export const getMentionPattern = (pattern: RegExp | string) => {
   }
 }
 
-export const getValueLength = (value: string, labelFieldName = 'label', valueFieldName = 'value', pattern?: RegExp, getMentionLength?: null | ((mention: MentionDropdownListOption, labelFieldName?: string, valueFieldName?: string) => number)) => {
-  pattern ??= getMentionReg(labelFieldName, valueFieldName)
+export const getValueLength = (value: string, labelFieldName = 'label', valueFieldName = 'value', prefix = '@', pattern?: RegExp, getMentionLength?: null | ((mention: MentionDropdownListOption, labelFieldName?: string, valueFieldName?: string, prefix?: string) => number)) => {
+  pattern ??= getMentionReg(labelFieldName, valueFieldName, prefix)
 
   const mentionPattern = getMentionPattern(pattern)
   const match = value.match(mentionPattern.global) as unknown as string[]
