@@ -179,7 +179,7 @@ describe('utils', () => {
   test('getValueLength', () => {
     const value = 'Hi, #{label:张三,value:1}, This is #{label:李四,value:2}.\nNice to meet you.'
     expect(getValueLength(value)).toEqual(value.length)
-    expect(getValueLength(value, 'label', 'value', /#ABCDEF/)).toEqual(value.length)
-    expect(getValueLength(value, 'label', 'value', getMentionReg(), () => 2)).toEqual(value.length - 15 * 2)
+    expect(getValueLength(value, 'label', 'value', '#', /#ABCDEF/)).toEqual(value.length)
+    expect(getValueLength(value, 'label', 'value', '#', getMentionReg(), () => 2)).toEqual(value.length - 15 * 2)
   })
 })
