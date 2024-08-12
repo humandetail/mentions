@@ -51,6 +51,8 @@
   background-color: hsl(var(--input, 214.3 31.8% 91.4%));
   padding: 0.125rem 0.25rem;
   font-style: normal;
+  display: inline-block;
+  line-height: 18px;
 }
 
 .vanilla-mentions__dropdown-container {
