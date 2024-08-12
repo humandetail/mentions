@@ -1,5 +1,7 @@
 
 
+## [0.1.3](https://github.com/humandetail/mentions/compare/mentions.js-0.1.2...${npm.name}-0.1.3) (2024-08-12)
+
 ## [0.1.2](https://github.com/humandetail/mentions/compare/mentions.js-0.1.1...${npm.name}-0.1.2) (2024-08-05)
 
 
