@@ -1,5 +1,12 @@
 
 
+## [0.1.4](https://github.com/humandetail/mentions/compare/mentions.js-0.1.3...${npm.name}-0.1.4) (2024-09-27)
+
+
+### Bug Fixes
+
+* 语义化下拉选框中的label和valueg带来的影响 [#10](https://github.com/humandetail/mentions/issues/10) ([4974a15](https://github.com/humandetail/mentions/commit/4974a153e8dc86ad4c7ed042c6d8d15f3258d504))
+
 ## [0.1.3](https://github.com/humandetail/mentions/compare/mentions.js-0.1.2...${npm.name}-0.1.3) (2024-08-12)
 
 ## [0.1.2](https://github.com/humandetail/mentions/compare/mentions.js-0.1.1...${npm.name}-0.1.2) (2024-08-05)
