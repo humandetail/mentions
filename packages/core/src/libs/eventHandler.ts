@@ -95,7 +95,7 @@ const createEventHandler = () => {
     const { data } = e
     const target = e.target as HTMLElement
 
-    const value = valueFormatter(target.innerHTML, labelFieldName, valueFieldName, formatter?.parser)
+    const value = valueFormatter(target.innerHTML, labelFieldName, valueFieldName, prefix, formatter?.parser)
     const valueLength = getValueLength(value, labelFieldName, valueFieldName, prefix, formatter?.pattern, getMentionLength)
 
     if (integerValidator(maxLength) && valueLength + 1 > maxLength) {
@@ -135,6 +135,7 @@ const createEventHandler = () => {
         formatter,
         labelFieldName,
         valueFieldName,
+        prefix,
         disabled,
         readonly
       }
@@ -147,7 +148,7 @@ const createEventHandler = () => {
 
     const target = e.target as HTMLElement
 
-    const value = valueFormatter(target.innerHTML, labelFieldName, valueFieldName, formatter?.parser)
+    const value = valueFormatter(target.innerHTML, labelFieldName, valueFieldName, prefix, formatter?.parser)
 
     // 输入达到最大值的时候还原输入框的值
     if (integerValidator(maxLength) && getValueLength(value) > maxLength) {

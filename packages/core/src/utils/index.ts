@@ -117,7 +117,7 @@ export function integerValidator (value: number) {
   return typeof value === 'number' && !Number.isNaN(value) && value > 0 && value % 1 === 0
 }
 
-export const valueFormatter = (innerHTML: HTMLString, labelFieldName = 'label', valueFieldName = 'value', parser?: (key: string, value: string) => string) => {
+export const valueFormatter = (innerHTML: HTMLString, labelFieldName = 'label', valueFieldName = 'value', prefix = '@', parser?: (key: string, value: string) => string) => {
   const oDiv = document.createElement('div')
 
   oDiv.innerHTML = innerHTML
@@ -127,7 +127,7 @@ export const valueFormatter = (innerHTML: HTMLString, labelFieldName = 'label', 
       (_, $label: string, $value: string) => {
         return typeof parser === 'function'
           ? parser($label, $value)
-          : `#{${labelFieldName}:${$label},${valueFieldName}:${$value}}`
+          : `${prefix}{${labelFieldName}:${$label},${valueFieldName}:${$value}}`
       }
     )
   return oDiv.innerText
@@ -135,10 +135,10 @@ export const valueFormatter = (innerHTML: HTMLString, labelFieldName = 'label', 
 
 export const isEmptyTextNode = (node: Node) => node.nodeType === 3 && !node.nodeValue?.length
 
-export const computeMentionLength = (mention: MentionDropdownListOption, labelFieldName = 'label', valueFieldName = 'value', calculator?: null | ((m: MentionDropdownListOption, labelFieldName?: string, valueFieldName?: string) => number)) => {
+export const computeMentionLength = (mention: MentionDropdownListOption, labelFieldName = 'label', valueFieldName = 'value', prefix = '@', calculator?: null | ((m: MentionDropdownListOption, labelFieldName?: string, valueFieldName?: string) => number)) => {
   return typeof calculator === 'function'
     ? calculator(mention, labelFieldName, valueFieldName)
-    : `#{label:${(mention as unknown as Record<string, string>)[labelFieldName]},value:${(mention as unknown as Record<string, string>)[valueFieldName]}}`.length
+    : `${prefix}{label:${(mention as unknown as Record<string, string>)[labelFieldName]},value:${(mention as unknown as Record<string, string>)[valueFieldName]}}`.length
 }
 
 export const getMentionPattern = (pattern: RegExp | string) => {
@@ -160,7 +160,7 @@ export const getValueLength = (value: string, labelFieldName = 'label', valueFie
     return count + (
       !m
         ? 0
-        : computeMentionLength({ value: m[1], key: m[2] }, labelFieldName, valueFieldName, getMentionLength)
+        : computeMentionLength({ value: m[1], key: m[2] }, labelFieldName, valueFieldName, prefix, getMentionLength)
     )
   }, 0)
 }

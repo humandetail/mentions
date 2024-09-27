@@ -81,7 +81,7 @@
                 <td>
                   <input
                     :value="row[oldMentionOptions.labelFieldName]"
-                    @change="handleTableInputChange(row[oldMentionOptions.valueFieldName], oldMentionOptions.labelFieldName, $event)"
+                    @change="handleTableInputChange(row[oldMentionOptions.labelFieldName], oldMentionOptions.labelFieldName, $event)"
                   >
                 </td>
                 <td>
@@ -167,15 +167,15 @@ const mentionOptions = ref({
 })
 
 const dropdownOptions = ref([
-  { key: '1', value: 'John' },
-  { key: '2', value: 'Jack' },
-  { key: '3', value: 'Tom' },
-  { key: '4', value: 'Jerry' }
+  { value: '1', label: 'John' },
+  { value: '2', label: 'Jack' },
+  { value: '3', label: 'Tom' },
+  { value: '4', label: 'Jerry' }
 ])
 
 watch(() => props.oldDropdownOptions, () => {
   dropdownOptions.value = props.oldDropdownOptions
-}, { deep: true })
+}, { deep: true, immediate: true })
 
 const formItems = [
   {

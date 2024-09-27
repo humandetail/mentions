@@ -212,7 +212,7 @@ const createRenderer = (options: Required<MentionOptions>) => {
       // 2. 插入 @Mention 内容块并让光标位置插入块之后
       const oM = createMentionElement(mention[labelFieldName], mention[valueFieldName], prefix, suffix)
 
-      if (!(integerValidator(maxLength) && getValueLength(value) + computeMentionLength(mention, labelFieldName, valueFieldName, context.state.getMentionLength) > maxLength)) {
+      if (!(integerValidator(maxLength) && getValueLength(value) + computeMentionLength(mention, labelFieldName, valueFieldName, prefix, context.state.getMentionLength) > maxLength)) {
         // 只允许在剩余长度足够的情况下插入 mention
         insertNodeAfterRange(oM)
       }
@@ -222,7 +222,7 @@ const createRenderer = (options: Required<MentionOptions>) => {
     context.dropdown?.hide()
 
     // 4. 记录新的内容
-    const newValue = valueFormatter(editor.innerHTML, labelFieldName, valueFieldName, context.state.formatter?.parser)
+    const newValue = valueFormatter(editor.innerHTML, labelFieldName, valueFieldName, prefix, context.state.formatter?.parser)
 
     handleValueChange(context, newValue)
   }

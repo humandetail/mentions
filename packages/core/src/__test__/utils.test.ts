@@ -146,7 +146,7 @@ describe('utils', () => {
     })
 
     test('with parser', () => {
-      expect(valueFormatter(innerHTML, 'value', 'key', (key, value) => `@[${key}]:[${value}]`))
+      expect(valueFormatter(innerHTML, 'value', 'key', '@', (key, value) => `@[${key}]:[${value}]`))
         .toBe('Hi, @[1][张三], This is @[2][李四].\nNice to meet you.')
     })
   })
@@ -166,7 +166,7 @@ describe('utils', () => {
       expect(computeMentionLength(mentionOption)).toEqual(14)
     })
     test('with calculator', () => {
-      expect(computeMentionLength(mentionOption, 'value', 'key', () => 2)).toEqual(2)
+      expect(computeMentionLength(mentionOption, 'value', 'key', '@', () => 2)).toEqual(2)
     })
   })
 

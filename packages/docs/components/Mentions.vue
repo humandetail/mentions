@@ -24,10 +24,10 @@ const inputValue = ref('')
 const containerRef = ref()
 
 const dropdownOptions = ref([
-  { key: '1', value: 'John' },
-  { key: '2', value: 'Jack' },
-  { key: '3', value: 'Tom' },
-  { key: '4', value: 'Jerry' }
+  { value: '1', label: 'John' },
+  { value: '2', label: 'Jack' },
+  { value: '3', label: 'Tom' },
+  { value: '4', label: 'Jerry' }
 ])
 
 const mentionOptions = ref({
@@ -47,7 +47,7 @@ const mentionOptions = ref({
   valueFieldName: 'value',
   optionsFetchApi: null,
   immediate: false,
-  filterOption: (option, filterValue) => option.value.toLowerCase().includes(filterValue.toLowerCase()),
+  filterOption: (option, filterValue) => option.label.toLowerCase().includes(filterValue.toLowerCase()),
   dropdownMaxWidth: null,
   dropdownMaxHeight: 200
 })
